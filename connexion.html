@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion | GBÊKÊ FM</title>
+<meta name="description" content="Connectez-vous à votre compte GBÊKÊ FM pour retrouver vos podcasts favoris et votre historique d'écoute.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="">
+<div id="app-header"></div>
+
+<main>
+  <div class="auth">
+    <aside class="auth__side">
+      <img src="assets/brand/gbeke-logo.png" alt="GBÊKÊ FM">
+      <h2>Bon retour sur GBÊKÊ FM</h2>
+      <p>Connectez-vous pour retrouver vos podcasts favoris et reprendre votre écoute là où vous l'aviez laissée.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg> Vos favoris synchronisés</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg> Historique et reprise de lecture</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg> Accès à votre profil personnel</li>
+      </ul>
+    </aside>
+    <div class="auth__form">
+      <h1>Connexion</h1>
+      <p class="sub">Accédez à votre espace personnel.</p>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">Adresse e-mail <span class="req">*</span></label>
+          <input class="input" type="email" id="email" placeholder="vous@email.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="pwd">Mot de passe <span class="req">*</span></label>
+          <input class="input" type="password" id="pwd" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+          <label class="checkbox" style="margin:0"><input type="checkbox" id="remember" checked> <span style="margin-top:0">Se souvenir de moi</span></label>
+          <a href="#" style="color:var(--orange);font-weight:600;font-size:.9rem" onclick="return false">Mot de passe oublié ?</a>
+        </div>
+        <button class="btn btn--primary btn--block btn--lg" type="submit" id="loginBtn">Se connecter</button>
+      </form>
+      <div class="divider">ou</div>
+      <div style="display:grid;gap:10px">
+        <button class="btn btn--ghost btn--block" id="demoAdmin">Compte démo — Administrateur</button>
+        <button class="btn btn--ghost btn--block" id="demoAuditeur">Compte démo — Auditeur</button>
+      </div>
+      <details style="margin-top:16px;font-size:.85rem;color:var(--muted)">
+        <summary style="cursor:pointer;color:var(--orange);font-weight:600">Identifiants de démonstration</summary>
+        <div style="margin-top:10px;line-height:1.7">
+          <div><b>Admin :</b> demo.admin@gbekefm.com — <code>DemoAdmin#2025</code></div>
+          <div><b>Auditeur :</b> demo.auditeur@email.ci — <code>DemoAuditeur#2025</code></div>
+        </div>
+      </details>
+      <p class="swap">Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
+      <p class="hint center" style="margin-top:16px">La connexion est facultative : vous pouvez écouter et télécharger sans compte.</p>
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI;
+  var G = window.GBEKE;
+
+  function go(user) {
+    U.setUser({
+      id: user.id, email: user.email, prenom: user.prenom, nom: user.nom,
+      role: user.role, demo: !!user.demo, date: new Date().toISOString()
+    });
+    U.toast("Bienvenue " + user.prenom + " ! Vous êtes connecté.");
+    var dest = user.role === "Administrateur" ? "admin/index.html" : "profil.html";
+    setTimeout(function () { location.href = dest; }, 800);
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("email"), pwd = document.getElementById("pwd");
+    var ok = true;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.style.borderColor = "#d64545"; ok = false; } else email.style.borderColor = "";
+    if (pwd.value.length < 4) { pwd.style.borderColor = "#d64545"; ok = false; } else pwd.style.borderColor = "";
+    if (!ok) { U.toast("Vérifiez votre e-mail et votre mot de passe.", false); return; }
+    var btn = document.getElementById("loginBtn");
+    btn.disabled = true; btn.textContent = "Connexion…";
+    setTimeout(function () {
+      var user = G.auth(email.value, pwd.value);
+      if (!user) {
+        btn.disabled = false; btn.textContent = "Se connecter";
+        pwd.style.borderColor = "#d64545";
+        U.toast("E-mail ou mot de passe incorrect.", false);
+        return;
+      }
+      go(user);
+    }, 600);
+  });
+
+  document.getElementById("demoAdmin").addEventListener("click", function () {
+    var u = G.auth("demo.admin@gbekefm.com", "DemoAdmin#2025");
+    if (u) go(u);
+  });
+  document.getElementById("demoAuditeur").addEventListener("click", function () {
+    var u = G.auth("demo.auditeur@email.ci", "DemoAuditeur#2025");
+    if (u) go(u);
+  });
+});
+</script>
+</body>
+</html>

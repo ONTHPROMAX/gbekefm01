@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Écrivez-nous | GBÊKÊ FM</title>
+<meta name="description" content="Contactez GBÊKÊ FM : envoyez-nous un message sans créer de compte. Retrouvez aussi nos coordonnées et réseaux sociaux.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="contact">
+<div id="app-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <span>Contact</span></div>
+    <h1>Contactez-nous</h1>
+    <p>Une question, une suggestion, une demande de partenariat ou une interview ? Écrivez-nous — aucun compte n'est nécessaire.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+      <div class="detail">
+        <div class="detail__main">
+          <div class="side-card" style="padding:30px">
+            <h4 style="font-size:1.3rem;margin-bottom:6px">Envoyer un message</h4>
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:22px">Les champs marqués d'un <span style="color:var(--orange)">*</span> sont obligatoires.</p>
+            <form id="contactForm" novalidate>
+              <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="field">
+                  <label for="nom">Nom complet <span class="req">*</span></label>
+                  <input class="input" type="text" id="nom" name="nom" placeholder="Votre nom" required>
+                </div>
+                <div class="field">
+                  <label for="email">Adresse e-mail <span class="req">*</span></label>
+                  <input class="input" type="email" id="email" name="email" placeholder="vous@email.com" required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="sujet">Sujet <span class="req">*</span></label>
+                <select class="input" id="sujet" name="sujet" required>
+                  <option value="">— Choisir un sujet —</option>
+                  <option>Demande d'information</option>
+                  <option>Publicité & partenariat</option>
+                  <option>Proposer une interview</option>
+                  <option>Signaler un problème de flux</option>
+                  <option>Remerciements / avis</option>
+                  <option>Autre</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="message">Message <span class="req">*</span></label>
+                <textarea class="textarea" id="message" name="message" placeholder="Écrivez votre message ici…" required></textarea>
+                <div class="hint">Votre message sera transmis à l'équipe et traité dans les meilleurs délais.</div>
+              </div>
+              <div class="checkbox field">
+                <input type="checkbox" id="consent" required>
+                <label for="consent" style="font-weight:400;margin:0">J'accepte que mes données soient utilisées pour traiter ma demande, conformément à la politique de confidentialité.</label>
+              </div>
+              <button class="btn btn--primary btn--lg" type="submit" id="sendBtn" style="margin-top:6px">Envoyer le message</button>
+            </form>
+          </div>
+        </div>
+
+        <aside>
+          <div class="side-card">
+            <h4>Coordonnées</h4>
+            <ul class="info-list">
+              <li><span class="k">E-mail</span><span class="v">radiogbeke@gmail.com</span></li>
+              <li><span class="k">Téléphone</span><span class="v">+225 27 34 76 53 54</span></li>
+              <li><span class="k">Mobile</span><span class="v">+225 07 48 23 41 86</span></li>
+              <li><span class="k">Adresse</span><span class="v">Bouaké, Côte d'Ivoire</span></li>
+              <li><span class="k">Fréquence</span><span class="v">105.2 MHz</span></li>
+            </ul>
+          </div>
+          <div class="side-card">
+            <h4>Suivez-nous</h4>
+            <p style="color:var(--muted);font-size:.9rem;margin-bottom:14px">Retrouvez GBÊKÊ FM sur les réseaux sociaux.</p>
+            <div class="socials" style="display:flex;gap:10px;flex-wrap:wrap" id="socials"></div>
+          </div>
+          <div class="side-card">
+            <h4>Écoutez en direct</h4>
+            <p style="color:var(--muted);font-size:.9rem;margin-bottom:14px">La radio est disponible 24h/24 en streaming.</p>
+            <button class="btn btn--primary btn--block" id="listenLiveSide">Écouter le direct</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI, I = U.I;
+  var soc = [
+    ["https://www.facebook.com/webradiogbekefm", I.fb, "Facebook"],
+    ["https://twitter.com/Gbeke_fm", I.tw, "X / Twitter"],
+    ["https://www.instagram.com/gbeke_fm/", I.ig, "Instagram"],
+    ["https://www.youtube.com/@gbekefm5987", I.yt, "YouTube"]
+  ];
+  document.getElementById("socials").innerHTML = soc.map(function (s) {
+    return '<a href="' + s[0] + '" target="_blank" rel="noopener" aria-label="' + s[2] + '" class="icon-btn">' + s[1] + '</a>';
+  }).join("");
+
+  var lb = document.getElementById("listenLiveSide");
+  if (lb) lb.addEventListener("click", function () { U.openLive(); });
+
+  var form = document.getElementById("contactForm");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var nom = document.getElementById("nom"), email = document.getElementById("email"),
+        sujet = document.getElementById("sujet"), msg = document.getElementById("message"),
+        consent = document.getElementById("consent");
+    var ok = true;
+    [nom, email, sujet, msg].forEach(function (f) {
+      var bad = !f.value.trim();
+      f.style.borderColor = bad ? "#d64545" : "";
+      if (bad) ok = false;
+    });
+    if (email.value && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.style.borderColor = "#d64545"; ok = false; }
+    if (!consent.checked) { ok = false; U.toast("Merci d'accepter la politique de confidentialité.", false); return; }
+    if (!ok) { U.toast("Merci de remplir correctement tous les champs obligatoires.", false); return; }
+    var btn = document.getElementById("sendBtn");
+    btn.disabled = true; btn.textContent = "Envoi en cours…";
+    setTimeout(function () {
+      U.toast("Merci " + nom.value.split(" ")[0] + " ! Votre message a bien été envoyé.");
+      form.reset();
+      btn.disabled = false; btn.textContent = "Envoyer le message";
+    }, 900);
+  });
+});
+</script>
+</body>
+</html>

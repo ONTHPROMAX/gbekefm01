@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recherche | GBÊKÊ FM</title>
+<meta name="description" content="Recherchez une émission, un podcast, un article ou une catégorie sur GBÊKÊ FM.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="">
+<div id="app-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <span>Recherche</span></div>
+    <h1>Recherche</h1>
+    <p>Trouvez une émission, un podcast, un article ou une catégorie. Tapez un mot-clé puis validez.</p>
+    <form id="searchForm" class="search-box" style="margin-top:24px;padding:8px" onsubmit="return false">
+      <div style="display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:var(--radius-pill);padding:6px 8px 6px 18px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="Ex : sport, santé, matinale…" autofocus style="flex:1;border:none;outline:none;background:none;font-size:1.05rem;padding:10px 0">
+        <button class="btn btn--primary" type="submit" id="goBtn">Rechercher</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+      <div id="summary" class="section-head hide"><div><span class="eyebrow">Résultats</span><h2 id="summaryTitle"></h2></div></div>
+
+      <div id="results">
+        <div id="secEm" class="hide" style="margin-bottom:36px">
+          <h3 style="margin-bottom:16px;font-size:1.2rem">Émissions</h3>
+          <div class="grid grid-3" id="emGrid"></div>
+        </div>
+        <div id="secPod" class="hide" style="margin-bottom:36px">
+          <h3 style="margin-bottom:16px;font-size:1.2rem">Podcasts</h3>
+          <div class="grid grid-3" id="podGrid"></div>
+        </div>
+        <div id="secArt" class="hide">
+          <h3 style="margin-bottom:16px;font-size:1.2rem">Articles</h3>
+          <div class="grid grid-3" id="artGrid"></div>
+        </div>
+      </div>
+
+      <div id="empty" class="empty hide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <h3>Aucun résultat</h3><p>Essayez un autre mot-clé ou parcourez nos catégories.</p>
+        <a class="btn btn--primary" href="categories.html" style="margin-top:14px">Voir les catégories</a>
+      </div>
+
+      <div id="intro" class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <h3>Que recherchez-vous ?</h3><p>Saisissez un mot-clé pour explorer les émissions, podcasts et articles de GBÊKÊ FM.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI;
+  var input = document.getElementById("q");
+  var initial = new URLSearchParams(location.search).get("q") || "";
+  input.value = initial;
+
+  function run(q) {
+    q = (q || "").trim();
+    var has = q.length > 0;
+    document.getElementById("intro").classList.toggle("hide", has);
+    document.getElementById("summary").classList.toggle("hide", !has);
+    if (!has) { document.getElementById("results").classList.add("hide"); document.getElementById("empty").classList.add("hide"); return; }
+    var r = U.searchAll(q);
+    var total = r.emissions.length + r.podcasts.length + r.articles.length;
+    document.getElementById("summaryTitle").textContent = total + " résultat(s) pour « " + q + " »";
+    document.getElementById("results").classList.toggle("hide", total === 0);
+    document.getElementById("empty").classList.toggle("hide", total > 0);
+    document.getElementById("secEm").classList.toggle("hide", r.emissions.length === 0);
+    document.getElementById("secPod").classList.toggle("hide", r.podcasts.length === 0);
+    document.getElementById("secArt").classList.toggle("hide", r.articles.length === 0);
+    document.getElementById("emGrid").innerHTML = r.emissions.map(U.emissionCard).join("");
+    document.getElementById("podGrid").innerHTML = r.podcasts.map(U.podcastGridCard).join("");
+    document.getElementById("artGrid").innerHTML = r.articles.map(U.articleCard).join("");
+    U.revealInit();
+    if (history.replaceState) history.replaceState(null, "", "recherche.html?q=" + encodeURIComponent(q));
+  }
+  document.getElementById("searchForm").addEventListener("submit", function () { run(input.value); });
+  input.addEventListener("input", function () { run(input.value); });
+  if (initial) run(initial);
+});
+</script>
+</body>
+</html>

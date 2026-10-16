@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catégories | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+      <div class="a-toolbar">
+        <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="Rechercher une catégorie…"></div>
+        <div class="spacer"></div>
+        <button class="a-btn a-btn--primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouvelle catégorie</button>
+      </div>
+      <div class="panel"><div class="panel__body flush"><div class="tbl-wrap">
+        <table class="tbl"><thead><tr><th>Catégorie</th><th>Slug</th><th>Émissions</th><th>Podcasts</th><th>Articles</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="body"></tbody></table>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="a-modal" id="modal">
+  <div class="a-modal__scrim"></div>
+  <div class="a-modal__box">
+    <div class="a-modal__head"><h3 id="mTitle">Nouvelle catégorie</h3><button class="x" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="a-modal__body">
+      <form id="form">
+        <input type="hidden" id="fId">
+        <div class="a-field"><label>Nom <span class="req">*</span></label><input class="a-input" id="fNom" required placeholder="Ex : Culture"></div>
+        <div class="a-field"><label>Description</label><textarea class="a-textarea" id="fDesc" style="min-height:80px" placeholder="Description de la catégorie…"></textarea></div>
+        <div class="a-row">
+          <div class="a-field"><label>Icône</label><select id="fIcone"><option value="book">Livre</option><option value="music">Musique</option><option value="heart">Cœur / Santé</option><option value="cap">Éducation</option><option value="users">Société</option><option value="ball">Sport</option><option value="grid">Générique</option></select></div>
+          <div class="a-field"><label>Statut</label><select id="fStatut"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        </div>
+      </form>
+    </div>
+    <div class="a-modal__foot"><button class="a-btn a-btn--ghost" data-close-modal>Annuler</button><button class="a-btn a-btn--primary" id="saveBtn">Enregistrer</button></div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, S = A.Store;
+  A.mountAdmin("categories", "Catégories", "Contenus / Catégories", '<button class="a-btn a-btn--primary a-btn--sm" id="addBtn2">' + A.A.plus + ' Ajouter</button>');
+  document.getElementById("addBtn2").addEventListener("click", function () { open(null); });
+
+  var q = "";
+  function counts(c) {
+    return {
+      e: S.emissions.filter(function (x) { return x.categorie === c.nom; }).length,
+      p: S.podcasts.filter(function (x) { return x.categorie === c.nom; }).length,
+      a: S.articles.filter(function (x) { return x.categorie === c.nom; }).length
+    };
+  }
+  function render() {
+    var list = S.categories.filter(function (c) { return !q || c.nom.toLowerCase().indexOf(q.toLowerCase()) > -1; });
+    document.getElementById("body").innerHTML = list.map(function (c) {
+      var n = counts(c);
+      return '<tr>' +
+        '<td><div class="cf"><span class="mini-av" style="border-radius:10px">' + A.A[c.icone] + '</span><div class="nm">' + A.esc(c.nom) + '</div></div></td>' +
+        '<td class="sm">/' + c.slug + '</td>' +
+        '<td>' + n.e + '</td><td>' + n.p + '</td><td>' + n.a + '</td>' +
+        '<td>' + A.statutBadge(c.statut) + '</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="act" data-view="' + c.id + '" title="Voir">' + A.A.eye + '</button>' +
+          '<button class="act" data-edit="' + c.id + '" title="Modifier">' + A.A.edit + '</button>' +
+          '<button class="act danger" data-del="' + c.id + '" title="Supprimer">' + A.A.trash + '</button>' +
+        '</div></td></tr>';
+    }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--a-muted);padding:30px">Aucune catégorie trouvée.</td></tr>';
+  }
+  function open(id) {
+    var c = id ? S.categories.find(function (x) { return x.id === id; }) : null;
+    document.getElementById("mTitle").textContent = c ? "Modifier la catégorie" : "Nouvelle catégorie";
+    document.getElementById("fId").value = c ? c.id : "";
+    document.getElementById("fNom").value = c ? c.nom : "";
+    document.getElementById("fDesc").value = c ? c.description : "";
+    document.getElementById("fIcone").value = c ? c.icone : "grid";
+    document.getElementById("fStatut").value = c ? c.statut : "active";
+    A.openModal("modal");
+  }
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    var nom = document.getElementById("fNom");
+    if (!nom.value.trim()) { A.toast("Le nom est obligatoire.", false); return; }
+    var id = document.getElementById("fId").value;
+    var data = {
+      nom: nom.value.trim(), description: document.getElementById("fDesc").value.trim() || "—",
+      icone: document.getElementById("fIcone").value, statut: document.getElementById("fStatut").value,
+      slug: nom.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+    };
+    if (id) { var c = S.categories.find(function (x) { return x.id === Number(id); }); Object.assign(c, data); A.toast("Catégorie mise à jour."); }
+    else { data.id = S.nextId(S.categories); S.categories.push(data); A.toast("Catégorie créée."); }
+    A.closeModal("modal"); render();
+  });
+  document.getElementById("body").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.edit) open(Number(b.dataset.edit));
+    else if (b.dataset.del) { if (confirm("Supprimer cette catégorie ?")) { S.categories = S.categories.filter(function (x) { return x.id !== Number(b.dataset.del); }); A.toast("Catégorie supprimée."); render(); } }
+    else if (b.dataset.view) window.open("../categorie.html?id=" + b.dataset.view, "_blank");
+  });
+  document.getElementById("q").addEventListener("input", function (e) { q = e.target.value; render(); });
+  document.getElementById("addBtn").addEventListener("click", function () { open(null); });
+  render();
+});
+</script>
+</body>
+</html>

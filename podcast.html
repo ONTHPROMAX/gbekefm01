@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Podcast — GBÊKÊ FM</title>
+<meta name="description" content="Écoutez, téléchargez et ajoutez ce podcast à vos favoris sur GBÊKÊ FM.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="podcasts">
+<div id="app-header"></div>
+<div id="content"></div>
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI, I = U.I;
+  var id = new URLSearchParams(location.search).get("id") || 1;
+  var p = GBEKE.podcastById(id) || GBEKE.podcasts[0];
+  document.title = p.titre + " — Podcast GBÊKÊ FM";
+  var cat = GBEKE.categories.find(function (c) { return c.nom === p.categorie; }) || { id: 1 };
+  var html =
+  '<section class="page-hero"><div class="wrap">' +
+    '<div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <a href="podcasts.html">Podcasts</a> <span>/</span> <span>' + p.emission + '</span></div>' +
+    '<h1>' + p.titre + '</h1>' +
+    '<div class="detail__meta" style="margin-top:14px">' +
+      '<span class="badge badge--cat">' + p.categorie + '</span>' +
+      '<span>' + I.radio + '<a href="emission.html?id=' + p.emissionId + '" style="color:#fff;text-decoration:underline">' + p.emission + '</a></span>' +
+      '<span>' + I.clock + p.duree + '</span>' +
+      '<span>' + I.user + p.createur + '</span>' +
+      '<span>' + I.spark + GBEKE.fmtNum(p.ecoute) + ' écoutes</span>' +
+    '</div>' +
+  '</div></section>' +
+  '<main><section class="section"><div class="wrap"><div class="detail">' +
+    '<div class="detail__main">' +
+      '<div class="audio-card reveal">' +
+        '<div class="audio-card__top">' +
+          '<div class="audio-card__cover"><img src="' + p.image + '" alt=""></div>' +
+          '<div><h3>' + p.titre + '</h3><p class="m">' + p.emission + ' • ' + GBEKE.fmtDate(p.date) + '</p>' +
+          '<p class="m" style="margin-top:8px">' + p.duree + ' • ' + GBEKE.fmtNum(p.telechargements) + ' téléchargements</p></div>' +
+        '</div>' +
+        '<div class="audio-card__ctrl">' +
+          '<button class="player__icon" id="bigBack" aria-label="Reculer de 15 secondes" title="Reculer 15 s">' + I.skipBack + '</button>' +
+          '<button class="play-fab" id="bigPlay">' + I.play + '</button>' +
+          '<button class="player__icon" id="bigFwd" aria-label="Avancer de 15 secondes" title="Avancer 15 s">' + I.skipFwd + '</button>' +
+          '<div class="progress" id="bigProg"><div class="progress__fill" id="bigFill"></div></div>' +
+          '<span class="player__time" id="bigTime">0:00 / ' + p.duree + '</span>' +
+        '</div>' +
+        '<div class="audio-card__btns">' +
+          '<button class="btn btn--light" id="favBtn">' + I.heart + 'Favori</button>' +
+          '<a class="btn btn--light" id="dlBtn" href="' + p.audio + '" download="GBEKE-FM - ' + p.titre + '.mp3">' + I.download + 'Télécharger</a>' +
+          '<a class="btn btn--light" href="emission.html?id=' + p.emissionId + '">' + I.radio + 'Voir l\'émission</a>' +
+        '</div>' +
+      '</div>' +
+      '<h2 style="margin:30px 0 14px">À propos de cet épisode</h2>' +
+      '<div class="prose"><p>' + p.description + '</p>' +
+      '<p>Cet épisode fait partie de l\'émission <strong>' + p.emission + '</strong>, animée par ' + p.createur + '. Retrouvez tous les épisodes dans la rubrique dédiée.</p>' +
+      '<blockquote>Écoutez GBÊKÊ FM, jusqu\'au bout du monde !</blockquote></div>' +
+      '<h2 style="margin:30px 0 14px">Épisodes similaires</h2>' +
+      '<div class="grid grid-2" id="similar"></div>' +
+    '</div>' +
+    '<aside>' +
+      '<div class="side-card sticky reveal"><h4>' + I.clock + 'Informations</h4>' +
+      '<ul class="info-list">' +
+        '<li><span class="k">Durée</span><span class="v">' + p.duree + '</span></li>' +
+        '<li><span class="k">Publication</span><span class="v">' + GBEKE.fmtDateShort(p.date) + '</span></li>' +
+        '<li><span class="k">Émission</span><span class="v">' + p.emission + '</span></li>' +
+        '<li><span class="k">Créateur</span><span class="v">' + p.createur + '</span></li>' +
+        '<li><span class="k">Catégorie</span><span class="v">' + p.categorie + '</span></li>' +
+        '<li><span class="k">Écoutes</span><span class="v">' + GBEKE.fmtNum(p.ecoute) + '</span></li>' +
+      '</ul></div>' +
+      '<div class="side-card reveal"><h4>' + I.spark + 'Partager</h4>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+          '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href) + '">' + I.fb + 'Facebook</a>' +
+          '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=' + encodeURIComponent(location.href) + '">' + I.tw + 'Twitter</a>' +
+          '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(location.href) + '">' + I.wa + 'WhatsApp</a>' +
+        '</div></div>' +
+    '</aside>' +
+  '</div></div></section></main>';
+  document.getElementById("content").innerHTML = html;
+
+  var sim = GBEKE.publishedPodcasts().filter(function (x) { return x.id !== p.id && (x.emissionId === p.emissionId || x.categorie === p.categorie); }).slice(0, 4);
+  if (!sim.length) sim = GBEKE.recentPodcasts(4);
+  document.getElementById("similar").innerHTML = sim.map(U.podcastCard).join("");
+
+  function playIt() {
+    U.Player.play({ title: p.titre, sub: p.emission + " • " + p.duree, cover: p.image, src: p.audio, id: p.id });
+  }
+  document.getElementById("bigPlay").addEventListener("click", playIt);
+  document.getElementById("bigBack").addEventListener("click", function () { U.Player.skip(-15); });
+  document.getElementById("bigFwd").addEventListener("click", function () { U.Player.skip(15); });
+  // favori
+  var favBtn = document.getElementById("favBtn");
+  function refreshFav() { var on = U.isFav(p.id); favBtn.innerHTML = (on ? I.heartFill : I.heart) + (on ? "Dans vos favoris" : "Favori"); favBtn.classList.toggle("btn--primary", on); favBtn.classList.toggle("btn--light", !on); }
+  favBtn.addEventListener("click", function () { U.toggleFav(p.id); refreshFav(); });
+  refreshFav();
+  // téléchargement réel : déclenche immédiatement le téléchargement du fichier
+  document.getElementById("dlBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    U.downloadPodcast(p);
+    U.toast("Téléchargement de « " + p.titre + " » lancé…");
+  });
+  // barre de progression liée au lecteur global
+  setInterval(function () {
+    var a = U.Player.audio();
+    var fill = document.getElementById("bigFill"); var t = document.getElementById("bigTime");
+    if (a && a.duration && fill) {
+      var r = a.currentTime / a.duration;
+      fill.style.width = (r * 100) + "%";
+      var s = Math.floor(a.currentTime); t.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0") + " / " + p.duree;
+    }
+  }, 500);
+  U.revealInit();
+});
+</script>
+</body>
+</html>

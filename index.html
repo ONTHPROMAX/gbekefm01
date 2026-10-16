@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GBÊKÊ FM — Radio en direct, émissions & podcasts | 105.2 MHz Bouaké</title>
+<meta name="description" content="Écoutez GBÊKÊ FM en direct, découvrez nos émissions, podcasts et actualités. La radio de Bouaké, jusqu'au bout du monde !">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="accueil">
+<div id="app-header"></div>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__bg" style="background-image:url('assets/img/hero.jpg')"></div>
+    <div class="wrap">
+      <div class="hero__grid">
+        <div>
+          <span class="hero__tag"><span class="live-dot" style="background:#F26B0F"></span> EN DIRECT MAINTENANT • 105.2 MHz</span>
+          <h1>Votre radio de proximité,<br><em>jusqu'au bout du monde</em></h1>
+          <p class="lead">GBÊKÊ FM, premier média de Côte d'Ivoire certifié JTI à la norme CWA 17493. Écoutez le direct, revivez vos émissions et téléchargez vos podcasts préférés.</p>
+          <div class="hero__cta">
+            <button class="btn btn--primary btn--lg" id="listenLiveHero"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>Écouter en direct</button>
+            <a class="btn btn--light btn--lg" href="podcasts.html">Explorer les podcasts</a>
+          </div>
+          <div class="hero__stats">
+            <div class="st"><b>105.2</b><span>MHz à Bouaké</span></div>
+            <div class="st"><b>6</b><span>émissions phares</span></div>
+            <div class="st"><b>+40</b><span>podcasts à écouter</span></div>
+          </div>
+        </div>
+        <div class="nowcard">
+          <div class="nowcard__top">
+            <span class="player__live"><span class="live-dot"></span>EN DIRECT</span>
+            <span class="eq"><i></i><i></i><i></i><i></i></span>
+          </div>
+          <div class="nowcard__cover">
+            <img src="assets/img/emission-matin.jpg" alt="En direct">
+            <button class="play-fab" id="listenLive3" aria-label="Écouter en direct"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg></button>
+          </div>
+          <h3>Les Matins chez nous</h3>
+          <p class="meta">La matinale • Prospersensus &amp; KS Caméléon</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- À LA UNE -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">À la une</span><h2>Le meilleur de GBÊKÊ FM</h2><p class="sub">Une sélection de podcasts et d'articles à ne pas manquer cette semaine.</p></div>
+        <a class="link-more" href="podcasts.html">Tout voir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a>
+      </div>
+      <div class="feature">
+        <div class="feature__main reveal" id="featMain"></div>
+        <div class="feature__side" id="featSide"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÉMISSIONS -->
+  <section class="section" style="background:var(--bg-2)">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">Nos programmes</span><h2>Émissions</h2><p class="sub">Des concepts radio qui rassemblent, informent et divertissent.</p></div>
+        <a class="link-more" href="emissions.html">Toutes les émissions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a>
+      </div>
+      <div class="grid grid-3" id="emissionsGrid"></div>
+    </div>
+  </section>
+
+  <!-- PODCASTS RÉCENTS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">À réécouter</span><h2>Podcasts récents</h2><p class="sub">Écoutez en streaming ou téléchargez librement, sans compte.</p></div>
+        <a class="link-more" href="podcasts.html">Tous les podcasts <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a>
+      </div>
+      <div class="grid grid-2" id="podcastsGrid"></div>
+    </div>
+  </section>
+
+  <!-- CATÉGORIES -->
+  <section class="section" style="background:var(--bg-2)">
+    <div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">Explorer</span><h2>Catégories</h2></div></div>
+      <div class="grid grid-3" id="catGrid"></div>
+    </div>
+  </section>
+
+  <!-- ACTUALITÉS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">L'actualité</span><h2>Actualités GBÊKÊ FM</h2><p class="sub">Suivez la vie de votre radio et de la région du Gbêkê.</p></div>
+        <a class="link-more" href="actualites.html">Toutes les actualités <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a>
+      </div>
+      <div class="grid grid-3" id="articlesGrid"></div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="section">
+    <div class="wrap">
+      <div class="newsletter reveal">
+        <div>
+          <h2>Restez à l'écoute</h2>
+          <p>Recevez chaque semaine nos meilleurs podcasts, nos actualités et les temps forts de la radio. Sans obligation de compte.</p>
+        </div>
+        <div>
+          <form data-newsletter>
+            <input type="email" placeholder="Votre adresse e-mail" aria-label="Adresse e-mail" required>
+            <button class="btn btn--dark" type="submit">Je m'inscris</button>
+          </form>
+          <p class="note">Vous pourrez vous désabonner à tout moment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI, I = U.I;
+  // À la une
+  var top = GBEKE.topPodcasts(1)[0];
+  document.getElementById("featMain").innerHTML =
+    '<img src="' + top.image + '" alt="' + top.titre + '">' +
+    '<div class="fc"><span class="badge badge--cat">' + top.categorie + ' • À la une</span>' +
+    '<h3>' + top.titre + '</h3><p>' + top.description + '</p>' +
+    '<div style="display:flex;gap:12px;flex-wrap:wrap">' +
+    '<button class="btn btn--primary" data-play="' + top.id + '">' + I.play + 'Écouter</button>' +
+    '<a class="btn btn--light" href="podcast.html?id=' + top.id + '">Détails</a></div></div>';
+  var side = GBEKE.topPodcasts(3).slice(1);
+  document.getElementById("featSide").innerHTML = side.map(function (p) {
+    return '<article class="card card--podcast"><div class="thumb"><img src="' + p.image + '" alt=""></div>' +
+      '<div class="info"><h4><a href="podcast.html?id=' + p.id + '">' + p.titre + '</a></h4>' +
+      '<p>' + p.emission + ' • ' + p.duree + '</p></div>' +
+      '<button class="play-fab play-fab--sm" data-play="' + p.id + '">' + I.play + '</button></article>';
+  }).join("");
+  // Émissions
+  document.getElementById("emissionsGrid").innerHTML = GBEKE.emissions.slice(0, 6).map(U.emissionCard).join("");
+  // Podcasts
+  document.getElementById("podcastsGrid").innerHTML = GBEKE.recentPodcasts(6).map(U.podcastCard).join("");
+  // Catégories
+  document.getElementById("catGrid").innerHTML = GBEKE.categories.map(function (c) {
+    var n = GBEKE.emissions.filter(function (e) { return e.categorie === c.nom; }).length + GBEKE.articles.filter(function (a) { return a.categorie === c.nom; }).length;
+    return U.categoryTile(c, n);
+  }).join("");
+  // Articles
+  document.getElementById("articlesGrid").innerHTML = GBEKE.publishedArticles().slice(0, 3).map(U.articleCard).join("");
+  U.revealInit();
+  function goLive() { U.openLive(); }
+  ["listenLiveHero", "listenLive3"].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (b) b.addEventListener("click", goLive);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Articles | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+      <div class="a-toolbar">
+        <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="Rechercher un article…"></div>
+        <select class="a-select" id="fCat"><option value="">Toutes les catégories</option></select>
+        <select class="a-select" id="fSt"><option value="">Tous les statuts</option><option value="publié">Publié</option><option value="brouillon">Brouillon</option><option value="archivé">Archivé</option></select>
+        <div class="spacer"></div>
+        <button class="a-btn a-btn--primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouvel article</button>
+      </div>
+      <div class="panel"><div class="panel__body flush"><div class="tbl-wrap">
+        <table class="tbl"><thead><tr><th>Article</th><th>Catégorie</th><th>Auteur</th><th>Date</th><th>Vues</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="body"></tbody></table>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="a-modal" id="modal">
+  <div class="a-modal__scrim"></div>
+  <div class="a-modal__box">
+    <div class="a-modal__head"><h3 id="mTitle">Nouvel article</h3><button class="x" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="a-modal__body">
+      <form id="form">
+        <input type="hidden" id="fId">
+        <div class="a-field"><label>Titre <span class="req">*</span></label><input class="a-input" id="fTitre" required placeholder="Titre de l'article"></div>
+        <div class="a-field"><label>Résumé <span class="req">*</span></label><textarea class="a-textarea" id="fResume" required style="min-height:80px" placeholder="Chapeau / résumé court…"></textarea></div>
+        <div class="a-field"><label>Contenu <span class="req">*</span></label><textarea class="a-textarea" id="fContenu" required style="min-height:150px" placeholder="Corps de l'article (HTML autorisé)…"></textarea></div>
+        <div class="a-row">
+          <div class="a-field"><label>Catégorie <span class="req">*</span></label><select id="fCategorie" required></select></div>
+          <div class="a-field"><label>Auteur</label><input class="a-input" id="fAuteur" placeholder="Ex : Rédaction GBÊKÊ FM"></div>
+        </div>
+        <div class="a-row">
+          <div class="a-field"><label>Date</label><input class="a-input" type="date" id="fDate"></div>
+          <div class="a-field"><label>Statut</label><select id="fStatut"><option value="publié">Publié</option><option value="brouillon">Brouillon</option><option value="archivé">Archivé</option></select></div>
+        </div>
+        <div class="a-field"><label>Image à la une</label><div class="dropzone" id="dzImg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg><div><b>Image JPG / PNG</b></div></div></div>
+      </form>
+    </div>
+    <div class="a-modal__foot"><button class="a-btn a-btn--ghost" data-close-modal>Annuler</button><button class="a-btn a-btn--primary" id="saveBtn">Enregistrer</button></div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, S = A.Store;
+  A.mountAdmin("articles", "Articles", "Contenus / Articles", '<button class="a-btn a-btn--primary a-btn--sm" id="addBtn2">' + A.A.plus + ' Ajouter</button>');
+  document.getElementById("addBtn2").addEventListener("click", function () { open(null); });
+  document.getElementById("fCat").innerHTML += GBEKE.categories.map(function (c) { return '<option>' + c.nom + '</option>'; }).join("");
+  document.getElementById("fCategorie").innerHTML = GBEKE.categories.map(function (c) { return '<option>' + c.nom + '</option>'; }).join("");
+
+  var q = "", fc = "", fs = "";
+  function render() {
+    var list = S.articles.filter(function (a) {
+      return (!q || (a.titre + a.auteur).toLowerCase().indexOf(q.toLowerCase()) > -1) &&
+             (!fc || a.categorie === fc) && (!fs || a.statut === fs);
+    }).sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+    document.getElementById("body").innerHTML = list.map(function (a) {
+      return '<tr>' +
+        '<td><div class="cf"><img class="mini" src="../' + a.image + '" alt=""><div><div class="nm">' + A.esc(a.titre.substring(0, 42)) + (a.titre.length > 42 ? "…" : "") + '</div><div class="sm">' + A.esc(a.resume.substring(0, 46)) + '…</div></div></div></td>' +
+        '<td>' + a.categorie + '</td>' +
+        '<td class="sm">' + A.esc(a.auteur) + '</td>' +
+        '<td class="sm">' + GBEKE.fmtDateShort(a.date) + '</td>' +
+        '<td>' + A.fmtNum(a.vues) + '</td>' +
+        '<td>' + A.statutBadge(a.statut) + '</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="act" data-view="' + a.id + '" title="Voir">' + A.A.eye + '</button>' +
+          '<button class="act" data-edit="' + a.id + '" title="Modifier">' + A.A.edit + '</button>' +
+          '<button class="act danger" data-del="' + a.id + '" title="Supprimer">' + A.A.trash + '</button>' +
+        '</div></td></tr>';
+    }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--a-muted);padding:30px">Aucun article trouvé.</td></tr>';
+  }
+  function open(id) {
+    var a = id ? S.articles.find(function (x) { return x.id === id; }) : null;
+    document.getElementById("mTitle").textContent = a ? "Modifier l'article" : "Nouvel article";
+    document.getElementById("fId").value = a ? a.id : "";
+    document.getElementById("fTitre").value = a ? a.titre : "";
+    document.getElementById("fResume").value = a ? a.resume : "";
+    document.getElementById("fContenu").value = a ? a.contenu.replace(/<[^>]+>/g, "") : "";
+    document.getElementById("fCategorie").value = a ? a.categorie : GBEKE.categories[0].nom;
+    document.getElementById("fAuteur").value = a ? a.auteur : "Rédaction GBÊKÊ FM";
+    document.getElementById("fDate").value = a ? a.date : new Date().toISOString().slice(0, 10);
+    document.getElementById("fStatut").value = a ? a.statut : "publié";
+    A.openModal("modal");
+  }
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    var titre = document.getElementById("fTitre"), res = document.getElementById("fResume"), con = document.getElementById("fContenu");
+    if (!titre.value.trim() || !res.value.trim() || !con.value.trim()) { A.toast("Titre, résumé et contenu sont obligatoires.", false); return; }
+    var id = document.getElementById("fId").value;
+    var data = {
+      titre: titre.value.trim(), resume: res.value.trim(),
+      contenu: "<p>" + con.value.trim().replace(/\n\n/g, "</p><p>").replace(/\n/g, "<br>") + "</p>",
+      categorie: document.getElementById("fCategorie").value,
+      auteur: document.getElementById("fAuteur").value.trim() || "Rédaction GBÊKÊ FM",
+      date: document.getElementById("fDate").value || new Date().toISOString().slice(0, 10),
+      statut: document.getElementById("fStatut").value,
+      image: "assets/img/article-1.jpg"
+    };
+    if (id) { var a = S.articles.find(function (x) { return x.id === Number(id); }); Object.assign(a, data); A.toast("Article mis à jour."); }
+    else { data.id = S.nextId(S.articles); data.vues = 0; S.articles.unshift(data); A.toast("Article créé."); }
+    A.closeModal("modal"); render();
+  });
+  document.getElementById("body").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.edit) open(Number(b.dataset.edit));
+    else if (b.dataset.del) { if (confirm("Supprimer cet article ?")) { S.articles = S.articles.filter(function (x) { return x.id !== Number(b.dataset.del); }); A.toast("Article supprimé."); render(); } }
+    else if (b.dataset.view) window.open("../article.html?id=" + b.dataset.view, "_blank");
+  });
+  document.getElementById("q").addEventListener("input", function (e) { q = e.target.value; render(); });
+  document.getElementById("fCat").addEventListener("change", function (e) { fc = e.target.value; render(); });
+  document.getElementById("fSt").addEventListener("change", function (e) { fs = e.target.value; render(); });
+  document.getElementById("addBtn").addEventListener("click", function () { open(null); });
+  document.getElementById("dzImg").addEventListener("click", function () { A.toast("Téléversement image simulé (démo)."); });
+  render();
+});
+</script>
+</body>
+</html>

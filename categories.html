@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catégories — Explorez nos contenus | GBÊKÊ FM</title>
+<meta name="description" content="Parcourez les catégories de GBÊKÊ FM : culture, musique, santé, éducation, société et sport.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="categories">
+<div id="app-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <span>Catégories</span></div>
+    <h1>Catégories</h1>
+    <p>Les catégories organisent nos émissions, podcasts et articles pour vous aider à trouver rapidement ce qui vous intéresse.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+      <div class="grid grid-3" id="grid"></div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI;
+  var counts = {};
+  GBEKE.categories.forEach(function (c) {
+    var p = GBEKE.podcasts.filter(function (x) { return x.categorie === c.nom && x.statut === "publié"; }).length;
+    var a = GBEKE.articles.filter(function (x) { return x.categorie === c.nom && x.statut === "publié"; }).length;
+    var e = GBEKE.emissions.filter(function (x) { return x.categorie === c.nom; }).length;
+    counts[c.id] = p + a + e;
+  });
+  document.getElementById("grid").innerHTML = GBEKE.categories.map(function (c) { return U.categoryTile(c, counts[c.id] || 0); }).join("");
+  U.revealInit();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio en direct | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+
+      <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat"><div class="ic ic--r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><div class="lbl">Auditeurs en direct</div><div class="val" id="liveVal">0</div><span class="trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>+6,2%</span></div>
+        <div class="stat"><div class="ic ic--g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="lbl">Durée du direct aujourd'hui</div><div class="val">18 h 24</div></div>
+        <div class="stat"><div class="ic ic--b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></div><div class="lbl">Pic d'audience (24h)</div><div class="val">2 146</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__head"><div><h3>Configuration de la radio</h3><div class="sub">Paramètres du flux et informations</div></div></div>
+          <div class="panel__body">
+            <form id="radioForm">
+              <div class="a-row">
+                <div class="a-field"><label>Nom de la radio <span class="req">*</span></label><input class="a-input" id="rNom"></div>
+                <div class="a-field"><label>Fréquence</label><input class="a-input" id="rFreq"></div>
+              </div>
+              <div class="a-field"><label>Slogan</label><input class="a-input" id="rSlogan"></div>
+              <div class="a-row">
+                <div class="a-field"><label>Ville</label><input class="a-input" id="rVille"></div>
+                <div class="a-field"><label>Statut du direct</label><select id="rStatut"><option value="en_direct">En direct</option><option value="arret">Arrêté</option></select></div>
+              </div>
+              <div class="a-field"><label>URL du flux audio <span class="req">*</span></label><input class="a-input" id="rUrl" placeholder="https://…/stream.mp3"><div class="hint">Le flux est configurable à tout moment sans modifier le code.</div></div>
+              <div class="a-field"><label>Logo</label><div class="dropzone" id="dzLogo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg><div><b>Remplacer le logo</b></div></div></div>
+              <div style="display:flex;gap:10px;margin-top:6px">
+                <button class="a-btn a-btn--primary" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Enregistrer</button>
+                <button class="a-btn a-btn--ghost" type="button" id="testBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg> Tester le flux</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="panel__head"><h3>Aperçu de la fiche</h3></div>
+            <div class="panel__body">
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+                <img src="../assets/brand/gbeke-logo.png" alt="logo" style="width:72px;height:72px;object-fit:contain;background:var(--a-panel-2);border-radius:14px;padding:6px">
+                <div><div style="font-family:var(--font-head);font-weight:600;font-size:1.1rem" id="pNom">GBÊKÊ FM</div><div style="color:var(--a-muted);font-size:.85rem" id="pSlogan">Jusqu'au bout du monde !</div></div>
+              </div>
+              <div class="legend-row"><span class="l">Fréquence</span><b id="pFreq">105.2 MHz</b></div>
+              <div class="legend-row"><span class="l">Ville</span><b id="pVille">Bouaké, Côte d'Ivoire</b></div>
+              <div class="legend-row"><span class="l">Statut</span><b id="pStatut"><span class="a-badge live">En direct</span></b></div>
+              <div class="legend-row"><span class="l">Auditeurs</span><b id="pAud">1 284</b></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel__head"><h3>Diffusion en direct</h3><span class="a-badge live">Live</span></div>
+            <div class="panel__body">
+              <div class="mini-stat"><span class="ic ic--g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></span><div class="m"><b>Qualité du flux</b><span>128 kbps • Stéréo</span></div><span class="v" style="color:var(--green)">Stable</span></div>
+              <div class="mini-stat"><span class="ic ic--b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div class="m"><b>Latence moyenne</b><span>2,4 s</span></div><span class="v">Faible</span></div>
+              <div class="mini-stat"><span class="ic ic--o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 3-4 3 3 4-6"/></svg></span><div class="m"><b>Bande passante</b><span>Usage du jour</span></div><span class="v">64%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, R = GBEKE.radio;
+  A.mountAdmin("radio", "Radio en direct", "Diffusion / Radio");
+
+  document.getElementById("rNom").value = R.nom;
+  document.getElementById("rFreq").value = R.frequence;
+  document.getElementById("rSlogan").value = R.slogan;
+  document.getElementById("rVille").value = R.ville;
+  document.getElementById("rUrl").value = R.streamUrl;
+  document.getElementById("rStatut").value = "en_direct";
+
+  function syncPreview() {
+    document.getElementById("pNom").textContent = document.getElementById("rNom").value || R.nom;
+    document.getElementById("pSlogan").textContent = document.getElementById("rSlogan").value || R.slogan;
+    document.getElementById("pFreq").textContent = document.getElementById("rFreq").value || R.frequence;
+    document.getElementById("pVille").textContent = document.getElementById("rVille").value || R.ville;
+    var st = document.getElementById("rStatut").value;
+    document.getElementById("pStatut").innerHTML = st === "en_direct" ? '<span class="a-badge live">En direct</span>' : '<span class="a-badge draft">Arrêté</span>';
+  }
+  ["rNom","rFreq","rSlogan","rVille","rStatut"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", syncPreview);
+    document.getElementById(id).addEventListener("change", syncPreview);
+  });
+
+  var live = R.auditeurs;
+  function tick() { live += Math.floor(Math.random() * 41) - 18; if (live < 800) live = 800; document.getElementById("liveVal").textContent = A.fmtNum(live); document.getElementById("pAud").textContent = A.fmtNum(live); }
+  tick(); setInterval(tick, 3500);
+
+  document.getElementById("radioForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!document.getElementById("rNom").value.trim() || !document.getElementById("rUrl").value.trim()) { A.toast("Le nom et l'URL du flux sont obligatoires.", false); return; }
+    A.toast("Configuration de la radio enregistrée.");
+  });
+  document.getElementById("testBtn").addEventListener("click", function () { A.toast("Test du flux : connexion réussie (128 kbps)."); });
+  document.getElementById("dzLogo").addEventListener("click", function () { A.toast("Téléversement du logo simulé (démo)."); });
+  syncPreview();
+});
+</script>
+</body>
+</html>

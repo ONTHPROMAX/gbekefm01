@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Article | GBÊKÊ FM</title>
+<meta name="description" content="Lisez l'article complet sur le site de GBÊKÊ FM.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="actualites">
+<div id="app-header"></div>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+      <div class="crumbs" style="margin-bottom:18px"><a href="index.html">Accueil</a> <span>/</span> <a href="actualites.html">Actualités</a> <span>/</span> <span id="crumbCat">Article</span></div>
+      <div class="detail">
+        <article class="detail__main" id="main"></article>
+        <aside id="aside"></aside>
+      </div>
+      <div id="notFound" class="empty hide" style="margin-top:20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <h3>Article introuvable</h3><p>Cet article n'existe pas ou a été retiré.</p>
+        <a class="btn btn--primary" href="actualites.html" style="margin-top:14px">Voir toutes les actualités</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI, I = U.I;
+  var id = new URLSearchParams(location.search).get("id");
+  var a = GBEKE.articleById(id);
+  if (!a) { document.getElementById("notFound").classList.remove("hide"); document.querySelector(".detail").classList.add("hide"); return; }
+  document.title = a.titre + " | GBÊKÊ FM";
+  document.getElementById("crumbCat").textContent = a.categorie;
+
+  var related = GBEKE.publishedArticles().filter(function (x) { return x.id !== a.id && x.categorie === a.categorie; }).slice(0, 3);
+  if (related.length < 3) {
+    GBEKE.publishedArticles().forEach(function (x) { if (x.id !== a.id && related.length < 3 && related.indexOf(x) < 0) related.push(x); });
+  }
+
+  document.getElementById("main").innerHTML =
+    '<span class="badge badge--cat">' + a.categorie + '</span>' +
+    '<h1 style="margin-top:14px">' + a.titre + '</h1>' +
+    '<div class="detail__meta">' +
+      '<span>' + I.user + a.auteur + '</span>' +
+      '<span>' + I.clock + GBEKE.fmtDate(a.date) + '</span>' +
+      '<span>' + I.eye + GBEKE.fmtNum(a.vues) + ' vues</span>' +
+    '</div>' +
+    '<div class="cover-lg"><img src="' + a.image + '" alt="' + a.titre + '"></div>' +
+    '<p class="lead" style="font-size:1.15rem;color:#3a3730;font-weight:500">' + a.resume + '</p>' +
+    '<div class="prose">' + a.contenu + '</div>' +
+    '<div class="divider">Partager</div>' +
+    '<div class="actions" style="display:flex;gap:10px;flex-wrap:wrap">' +
+      '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href) + '">' + I.fb + ' Facebook</a>' +
+      '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=' + encodeURIComponent(location.href) + '&text=' + encodeURIComponent(a.titre) + '">' + I.tw + ' X / Twitter</a>' +
+      '<a class="btn btn--ghost btn--sm" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(a.titre + " " + location.href) + '">' + I.wa + ' WhatsApp</a>' +
+    '</div>';
+
+  var relHTML = related.length ? related.map(U.articleCard).join("") : "";
+  document.getElementById("aside").innerHTML =
+    '<div class="side-card">' +
+      '<h4>' + I.radio + 'GBÊKÊ FM en direct</h4>' +
+      '<p style="color:var(--muted);font-size:.9rem;margin-bottom:14px">Écoutez la radio pendant votre lecture, où que vous soyez.</p>' +
+      '<button class="btn btn--primary btn--block" id="listenLiveSide">' + I.play + ' Écouter le direct</button>' +
+    '</div>' +
+    '<div class="side-card">' +
+      '<h4>' + I.book + 'À lire aussi</h4>' +
+      (relHTML ? '<div class="grid" style="gap:16px">' + relHTML + '</div>' : '<p style="color:var(--muted);font-size:.9rem">Aucun autre article.</p>') +
+    '</div>';
+
+  var lb = document.getElementById("listenLiveSide");
+  if (lb) lb.addEventListener("click", function () { U.openLive(); });
+  U.revealInit();
+});
+</script>
+</body>
+</html>

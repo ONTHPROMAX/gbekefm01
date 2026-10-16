@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catégorie | GBÊKÊ FM</title>
+<meta name="description" content="Découvrez les émissions, podcasts et articles d'une catégorie de GBÊKÊ FM.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="categories">
+<div id="app-header"></div>
+
+<section class="page-hero" id="hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <a href="categories.html">Catégories</a> <span>/</span> <span id="crumbCat">Catégorie</span></div>
+    <h1 id="catTitle">Catégorie</h1>
+    <p id="catDesc"></p>
+  </div>
+</section>
+
+<main>
+  <section class="section" id="secEmissions">
+    <div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">Émissions</span><h2>Les émissions de cette catégorie</h2></div></div>
+      <div class="grid grid-3" id="emGrid"></div>
+      <div id="emEmpty" class="empty hide"><h3>Aucune émission</h3><p>Pas encore d'émission dans cette catégorie.</p></div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="secPodcasts">
+    <div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">Podcasts</span><h2>Les derniers épisodes</h2></div></div>
+      <div class="grid grid-3" id="podGrid"></div>
+      <div id="podEmpty" class="empty hide"><h3>Aucun podcast</h3><p>Pas encore d'épisode dans cette catégorie.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="secArticles">
+    <div class="wrap">
+      <div class="section-head"><div><span class="eyebrow">Actualités</span><h2>Articles liés</h2></div></div>
+      <div class="grid grid-3" id="artGrid"></div>
+      <div id="artEmpty" class="empty hide"><h3>Aucun article</h3><p>Pas encore d'article dans cette catégorie.</p></div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI;
+  var id = new URLSearchParams(location.search).get("id");
+  var c = GBEKE.categories.find(function (x) { return x.id === Number(id); });
+  if (!c) { c = GBEKE.categories[0]; }
+  document.title = c.nom + " — Catégorie | GBÊKÊ FM";
+  document.getElementById("crumbCat").textContent = c.nom;
+  document.getElementById("catTitle").textContent = c.nom;
+  document.getElementById("catDesc").textContent = c.description;
+
+  var ems = GBEKE.emissions.filter(function (e) { return e.categorie === c.nom; });
+  var pods = GBEKE.publishedPodcasts().filter(function (p) { return p.categorie === c.nom; }).sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+  var arts = GBEKE.publishedArticles().filter(function (a) { return a.categorie === c.nom; }).sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+
+  document.getElementById("emGrid").innerHTML = ems.map(U.emissionCard).join("");
+  document.getElementById("emEmpty").classList.toggle("hide", ems.length > 0);
+  document.getElementById("podGrid").innerHTML = pods.map(U.podcastGridCard).join("");
+  document.getElementById("podEmpty").classList.toggle("hide", pods.length > 0);
+  document.getElementById("artGrid").innerHTML = arts.map(U.articleCard).join("");
+  document.getElementById("artEmpty").classList.toggle("hide", arts.length > 0);
+  if (!ems.length) document.getElementById("secEmissions").classList.add("hide");
+  if (!pods.length) document.getElementById("secPodcasts").classList.add("hide");
+  if (!arts.length) document.getElementById("secArticles").classList.add("hide");
+  U.revealInit();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon profil — Favoris & historique | GBÊKÊ FM</title>
+<meta name="description" content="Votre espace personnel GBÊKÊ FM : podcasts favoris, historique d'écoute et reprise de lecture.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="">
+<div id="app-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <span>Mon profil</span></div>
+    <h1>Mon espace personnel</h1>
+    <p>Vos podcasts favoris et votre historique d'écoute, pour reprendre chaque épisode là où vous l'avez laissé.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+
+      <!-- Non connecté -->
+      <div id="guest" class="empty hide" style="padding:50px 20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <h3>Connectez-vous pour accéder à vos favoris</h3>
+        <p>Créez un compte gratuit ou connectez-vous. L'écoute reste possible sans compte, mais les favoris et l'historique nécessitent une connexion.</p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap">
+          <a class="btn btn--primary" href="connexion.html">Se connecter</a>
+          <a class="btn btn--ghost" href="inscription.html">Créer un compte</a>
+        </div>
+      </div>
+
+      <!-- Connecté -->
+      <div id="account" class="hide">
+        <div class="side-card" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:26px;margin-bottom:28px">
+          <div id="avatar" style="width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#7a2f00);color:#fff;display:grid;place-items:center;font-family:var(--font-head);font-size:1.6rem;font-weight:700;flex-shrink:0">A</div>
+          <div style="flex:1;min-width:200px">
+            <h3 id="uName" style="font-size:1.35rem;margin-bottom:4px">Auditeur</h3>
+            <p id="uEmail" style="color:var(--muted);font-size:.92rem">—</p>
+            <span class="badge badge--green" style="margin-top:8px" id="uRole">Compte actif</span>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn btn--primary hide" id="adminLink" href="admin/index.html">Back-office</a>
+            <button class="btn btn--ghost" id="logoutBtn">Se déconnecter</button>
+          </div>
+        </div>
+
+        <div class="toolbar" style="margin-bottom:24px">
+          <div class="chips" id="tabs">
+            <button class="chip is-active" data-tab="fav">Favoris <span class="pill-count" id="favCount">0</span></button>
+            <button class="chip" data-tab="hist">Historique <span class="pill-count" id="histCount">0</span></button>
+          </div>
+        </div>
+
+        <div id="tabFav">
+          <div class="grid grid-3" id="favGrid"></div>
+          <div id="favEmpty" class="empty hide"><h3>Aucun favori pour l'instant</h3><p>Cliquez sur le cœur d'un podcast pour l'ajouter ici.</p><a class="btn btn--primary" href="podcasts.html" style="margin-top:14px">Explorer les podcasts</a></div>
+        </div>
+
+        <div id="tabHist" class="hide">
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr><th>Podcast</th><th>Émission</th><th>Écouté le</th><th>Action</th></tr></thead>
+              <tbody id="histBody"></tbody>
+            </table>
+          </div>
+          <div id="histEmpty" class="empty hide"><h3>Aucun historique</h3><p>Vos épisodes écoutés apparaîtront ici automatiquement.</p></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI, I = U.I;
+  var user = U.getUser();
+
+  if (!user) { document.getElementById("guest").classList.remove("hide"); return; }
+  document.getElementById("account").classList.remove("hide");
+
+  var initials = ((user.prenom || "A").charAt(0) + (user.nom || "").charAt(0)).toUpperCase();
+  document.getElementById("avatar").textContent = initials || "A";
+  document.getElementById("uName").textContent = (user.prenom || "") + " " + (user.nom || "");
+  document.getElementById("uEmail").textContent = user.email || "—";
+
+  var role = user.role || "Utilisateur";
+  var roleEl = document.getElementById("uRole");
+  if (roleEl) roleEl.textContent = role === "Administrateur" ? "Administrateur" : "Compte actif";
+  if (role === "Administrateur") document.getElementById("adminLink").classList.remove("hide");
+
+  function renderFavs() {
+    var favs = U.getFavs();
+    var list = favs.map(function (id) { return GBEKE.podcastById(id); }).filter(Boolean);
+    document.getElementById("favCount").textContent = list.length;
+    document.getElementById("favGrid").innerHTML = list.map(U.podcastGridCard).join("");
+    document.getElementById("favEmpty").classList.toggle("hide", list.length > 0);
+    U.revealInit();
+  }
+  function renderHist() {
+    var h = U.store.get(U.HIST_KEY, []);
+    document.getElementById("histCount").textContent = h.length;
+    document.getElementById("histBody").innerHTML = h.map(function (x) {
+      var d = new Date(x.date);
+      var ds = d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }) + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      return '<tr>' +
+        '<td><div class="cell-flex"><img class="mini" src="' + x.image + '" alt=""><div><a href="podcast.html?id=' + x.id + '" style="font-weight:600">' + x.titre + '</a></div></div></td>' +
+        '<td>' + x.emission + '</td>' +
+        '<td style="color:var(--muted)">' + ds + '</td>' +
+        '<td><button class="btn btn--primary btn--sm" data-play="' + x.id + '">' + I.play + ' Reprendre</button></td>' +
+      '</tr>';
+    }).join("");
+    document.getElementById("histEmpty").classList.toggle("hide", h.length > 0);
+    document.querySelector("#tabHist .table-wrap").classList.toggle("hide", h.length === 0);
+  }
+
+  document.getElementById("tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-tab]"); if (!b) return;
+    U.$$("#tabs .chip").forEach(function (c) { c.classList.toggle("is-active", c === b); });
+    var t = b.dataset.tab;
+    document.getElementById("tabFav").classList.toggle("hide", t !== "fav");
+    document.getElementById("tabHist").classList.toggle("hide", t !== "hist");
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", function () {
+    U.setUser(null);
+    U.toast("Vous êtes déconnecté.");
+    setTimeout(function () { location.reload(); }, 700);
+  });
+
+  document.addEventListener("favchange", renderFavs);
+  renderFavs();
+  renderHist();
+});
+</script>
+</body>
+</html>

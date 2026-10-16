@@ -1,0 +1,356 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utilisateurs & rôles | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+
+      <div class="a-toolbar">
+        <div class="seg" id="tabs">
+          <button data-t="users" class="active">Utilisateurs</button>
+          <button data-t="roles">Rôles &amp; permissions</button>
+        </div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- ===== Vue Utilisateurs ===== -->
+      <div id="viewUsers">
+        <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat"><div class="ic ic--o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5a3.5 3.5 0 0 1 0 7M18 20a6 6 0 0 0-3-5"/></svg></div><div class="lbl">Comptes au total</div><div class="val" id="uTotal">0</div></div>
+          <div class="stat"><div class="ic ic--g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg></div><div class="lbl">Actifs</div><div class="val" id="uActif">0</div></div>
+          <div class="stat"><div class="ic ic--y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="lbl">Inactifs</div><div class="val" id="uInactif">0</div></div>
+          <div class="stat"><div class="ic ic--r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="lbl">Bloqués</div><div class="val" id="uBloque">0</div></div>
+        </div>
+
+        <div class="a-toolbar">
+          <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="Rechercher un nom, un e-mail…"></div>
+          <select class="a-select" id="fRole"><option value="">Tous les rôles</option></select>
+          <select class="a-select" id="fStatut"><option value="">Tous les statuts</option><option value="actif">Actif</option><option value="inactif">Inactif</option><option value="bloqué">Bloqué</option></select>
+          <div class="spacer"></div>
+          <button class="a-btn a-btn--primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouvel utilisateur</button>
+        </div>
+
+        <div class="panel"><div class="panel__body flush"><div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Utilisateur</th><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Inscription</th><th style="text-align:right">Actions</th></tr></thead>
+            <tbody id="body"></tbody>
+          </table>
+        </div></div></div>
+        <div id="empty" class="empty" style="display:none;text-align:center;color:var(--a-muted);padding:40px">Aucun utilisateur ne correspond à votre recherche.</div>
+      </div>
+
+      <!-- ===== Vue Rôles & permissions ===== -->
+      <div id="viewRoles" style="display:none">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel__head"><div><h3>Rôles</h3><div class="sub">Chaque rôle regroupe un ensemble de permissions</div></div>
+              <button class="a-btn a-btn--primary a-btn--sm" id="addRoleBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouveau rôle</button>
+            </div>
+            <div class="panel__body flush"><div class="tbl-wrap">
+              <table class="tbl"><thead><tr><th>Rôle</th><th>Utilisateurs</th><th>Permissions</th><th style="text-align:right">Actions</th></tr></thead>
+              <tbody id="rolesBody"></tbody></table>
+            </div></div>
+          </div>
+          <div class="panel">
+            <div class="panel__head"><div><h3>Permissions du rôle</h3><div class="sub" id="permRoleName">—</div></div></div>
+            <div class="panel__body">
+              <div class="perm-grid" id="permGrid"></div>
+              <div style="display:flex;gap:10px;margin-top:18px">
+                <button class="a-btn a-btn--primary" id="savePermBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Enregistrer les permissions</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><div><h3>Matrice des rôles &amp; permissions</h3><div class="sub">Vue d'ensemble des accès accordés</div></div></div>
+          <div class="panel__body flush"><div class="tbl-wrap">
+            <table class="tbl" id="matrix"><thead></thead><tbody></tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal : utilisateur -->
+<div class="a-modal" id="modal">
+  <div class="a-modal__scrim"></div>
+  <div class="a-modal__box">
+    <div class="a-modal__head"><h3 id="mTitle">Nouvel utilisateur</h3><button class="x" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="a-modal__body">
+      <form id="form">
+        <input type="hidden" id="fId">
+        <div class="a-row">
+          <div class="a-field"><label>Prénom <span class="req">*</span></label><input class="a-input" id="fPrenom" required placeholder="Ex : Amadou"></div>
+          <div class="a-field"><label>Nom <span class="req">*</span></label><input class="a-input" id="fNom" required placeholder="Ex : Koné"></div>
+        </div>
+        <div class="a-field"><label>Adresse e-mail <span class="req">*</span></label><input class="a-input" id="fEmail" type="email" required placeholder="nom@gbekefm.com"></div>
+        <div class="a-row">
+          <div class="a-field"><label>Rôle <span class="req">*</span></label><select id="fRole2" required></select></div>
+          <div class="a-field"><label>Statut</label><select id="fStatut2"><option value="actif">Actif</option><option value="inactif">Inactif</option><option value="bloqué">Bloqué</option></select></div>
+        </div>
+        <div class="a-field"><label>Mot de passe</label><input class="a-input" id="fPwd" type="password" placeholder="Laisser vide pour ne pas modifier"><div class="hint">Minimum 8 caractères, stocké de façon chiffrée (bcrypt).</div></div>
+        <div class="a-check"><input type="checkbox" id="fNotify" checked><label for="fNotify" style="margin:0">Envoyer un e-mail de bienvenue au nouvel utilisateur</label></div>
+      </form>
+    </div>
+    <div class="a-modal__foot"><button class="a-btn a-btn--ghost" data-close-modal>Annuler</button><button class="a-btn a-btn--primary" id="saveBtn">Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- Modal : rôle -->
+<div class="a-modal" id="roleModal">
+  <div class="a-modal__scrim"></div>
+  <div class="a-modal__box">
+    <div class="a-modal__head"><h3 id="rTitle">Nouveau rôle</h3><button class="x" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="a-modal__body">
+      <input type="hidden" id="rId">
+      <div class="a-field"><label>Nom du rôle <span class="req">*</span></label><input class="a-input" id="rNom" required placeholder="Ex : Journaliste"></div>
+      <div class="a-field"><label>Description</label><textarea class="a-textarea" id="rDesc" placeholder="À quoi sert ce rôle…"></textarea></div>
+      <div class="a-field"><label>Permissions</label><div class="perm-grid" id="rPerms"></div></div>
+    </div>
+    <div class="a-modal__foot"><button class="a-btn a-btn--ghost" data-close-modal>Annuler</button><button class="a-btn a-btn--primary" id="saveRoleBtn">Enregistrer</button></div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, G = window.GBEKE;
+  A.mountAdmin("utilisateurs", "Utilisateurs & rôles", "Système / Utilisateurs");
+
+  var body = document.getElementById("body");
+  var empty = document.getElementById("empty");
+  var selectedRole = G.roles[0].id;
+
+  // Permissions par défaut de chaque rôle (aligné sur le cahier des charges)
+  var ROLE_PERMS = {
+    "Administrateur": G.permissions.slice(),
+    "Éditeur": ["Gérer les émissions", "Gérer les podcasts", "Gérer les articles", "Gérer les catégories", "Gérer les messages", "Voir les statistiques"],
+    "Animateur": ["Gérer les émissions", "Gérer les podcasts", "Voir les statistiques"],
+    "Utilisateur": []
+  };
+
+  function initials(p, n) { return ((p[0] || "") + (n[0] || "")).toUpperCase(); }
+
+  function roleBadge(r) { return '<span class="a-badge role">' + A.esc(r) + '</span>'; }
+
+  function fillSelect(sel, roles, allLabel) {
+    sel.innerHTML = (allLabel ? '<option value="">' + allLabel + '</option>' : "") + roles.map(function (r) {
+      return '<option value="' + A.esc(r.nom) + '">' + A.esc(r.nom) + '</option>';
+    }).join("");
+  }
+
+  function renderUsers() {
+    var q = document.getElementById("q").value.trim().toLowerCase();
+    var rl = document.getElementById("fRole").value;
+    var st = document.getElementById("fStatut").value;
+    var list = A.Store.utilisateurs.slice();
+    if (rl) list = list.filter(function (u) { return u.role === rl; });
+    if (st) list = list.filter(function (u) { return u.statut === st; });
+    if (q) list = list.filter(function (u) { return (u.prenom + " " + u.nom + " " + u.email).toLowerCase().indexOf(q) > -1; });
+
+    body.innerHTML = list.map(function (u) {
+      var toggleLbl = u.statut === "actif" ? "Désactiver" : "Activer";
+      return '<tr>' +
+        '<td><div class="cf"><div class="mini-av">' + initials(u.prenom, u.nom) + '</div><div><div class="nm">' + A.esc(u.prenom + " " + u.nom) + '</div><div class="sm">#' + u.id + '</div></div></div></td>' +
+        '<td><span class="sm">' + A.esc(u.email) + '</span></td>' +
+        '<td>' + roleBadge(u.role) + '</td>' +
+        '<td>' + A.statutBadge(u.statut) + '</td>' +
+        '<td><span class="sm">' + A.esc(u.date) + '</span></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="act" data-edit="' + u.id + '" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>' +
+          '<button class="act" data-toggle="' + u.id + '" title="' + toggleLbl + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.6a9 9 0 1 0 0 10.8M3 12h9"/></svg></button>' +
+          '<button class="act danger" data-block="' + u.id + '" title="Bloquer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>' +
+          '<button class="act danger" data-del="' + u.id + '" title="Supprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+    empty.style.display = list.length ? "none" : "block";
+    updateStats();
+  }
+
+  function updateStats() {
+    var u = A.Store.utilisateurs;
+    document.getElementById("uTotal").textContent = A.fmtNum(u.length);
+    document.getElementById("uActif").textContent = A.fmtNum(u.filter(function (x) { return x.statut === "actif"; }).length);
+    document.getElementById("uInactif").textContent = A.fmtNum(u.filter(function (x) { return x.statut === "inactif"; }).length);
+    document.getElementById("uBloque").textContent = A.fmtNum(u.filter(function (x) { return x.statut === "bloqué"; }).length);
+  }
+
+  function openUser(id) {
+    var u = id ? A.Store.utilisateurs.find(function (x) { return x.id === id; }) : null;
+    document.getElementById("mTitle").textContent = u ? "Modifier l'utilisateur" : "Nouvel utilisateur";
+    document.getElementById("fId").value = u ? u.id : "";
+    document.getElementById("fPrenom").value = u ? u.prenom : "";
+    document.getElementById("fNom").value = u ? u.nom : "";
+    document.getElementById("fEmail").value = u ? u.email : "";
+    document.getElementById("fRole2").value = u ? u.role : G.roles[0].nom;
+    document.getElementById("fStatut2").value = u ? u.statut : "actif";
+    document.getElementById("fPwd").value = "";
+    A.openModal("modal");
+  }
+
+  body.addEventListener("click", function (e) {
+    var ed = e.target.closest("[data-edit]"); if (ed) { openUser(+ed.getAttribute("data-edit")); return; }
+    var tg = e.target.closest("[data-toggle]");
+    if (tg) { var u = A.Store.utilisateurs.find(function (x) { return x.id === +tg.getAttribute("data-toggle"); }); if (u) { u.statut = u.statut === "actif" ? "inactif" : "actif"; renderUsers(); A.toast("Statut de " + u.prenom + " mis à jour : " + u.statut + "."); } return; }
+    var bl = e.target.closest("[data-block]");
+    if (bl) { var b = A.Store.utilisateurs.find(function (x) { return x.id === +bl.getAttribute("data-block"); }); if (b) { b.statut = "bloqué"; renderUsers(); A.toast("Utilisateur bloqué.", false); } return; }
+    var dl = e.target.closest("[data-del]");
+    if (dl) { var id = +dl.getAttribute("data-del"); A.Store.utilisateurs = A.Store.utilisateurs.filter(function (x) { return x.id !== id; }); renderUsers(); A.toast("Utilisateur supprimé."); }
+  });
+
+  document.getElementById("q").addEventListener("input", renderUsers);
+  document.getElementById("fRole").addEventListener("change", renderUsers);
+  document.getElementById("fStatut").addEventListener("change", renderUsers);
+  document.getElementById("addBtn").addEventListener("click", function () { openUser(null); });
+
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    var id = document.getElementById("fId").value;
+    var prenom = document.getElementById("fPrenom").value.trim();
+    var nom = document.getElementById("fNom").value.trim();
+    var email = document.getElementById("fEmail").value.trim();
+    if (!prenom || !nom || !email) { A.toast("Prénom, nom et e-mail sont obligatoires.", false); return; }
+    if (id) {
+      var u = A.Store.utilisateurs.find(function (x) { return x.id === +id; });
+      u.prenom = prenom; u.nom = nom; u.email = email;
+      u.role = document.getElementById("fRole2").value;
+      u.statut = document.getElementById("fStatut2").value;
+      A.toast("Utilisateur modifié.");
+    } else {
+      A.Store.utilisateurs.push({
+        id: A.Store.nextId(A.Store.utilisateurs), prenom: prenom, nom: nom, email: email,
+        role: document.getElementById("fRole2").value, statut: document.getElementById("fStatut2").value,
+        date: new Date().toISOString().slice(0, 10)
+      });
+      A.toast("Utilisateur créé" + (document.getElementById("fNotify").checked ? " — e-mail de bienvenue envoyé." : "."));
+    }
+    A.closeModal("modal");
+    renderUsers();
+  });
+
+  /* ---------- Rôles & permissions ---------- */
+  function renderRoles() {
+    document.getElementById("rolesBody").innerHTML = G.roles.map(function (r) {
+      var nb = A.Store.utilisateurs.filter(function (u) { return u.role === r.nom; }).length;
+      return '<tr>' +
+        '<td><div><div class="nm">' + A.esc(r.nom) + '</div><div class="sm">' + A.esc(r.description) + '</div></div></td>' +
+        '<td>' + nb + '</td>' +
+        '<td><span class="a-badge ' + (r.permissions ? 'act' : 'draft') + '">' + r.permissions + ' perm.</span></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="act" data-perm="' + r.id + '" title="Voir les permissions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></button>' +
+          '<button class="act" data-editrole="' + r.id + '" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+    renderPermGrid();
+    renderMatrix();
+  }
+
+  function renderPermGrid() {
+    var r = G.roles.find(function (x) { return x.id === selectedRole; });
+    document.getElementById("permRoleName").textContent = r ? "Rôle : " + r.nom : "—";
+    var perms = ROLE_PERMS[r ? r.nom : ""] || [];
+    document.getElementById("permGrid").innerHTML = G.permissions.map(function (p) {
+      var on = perms.indexOf(p) > -1;
+      return '<label class="perm-item"><input type="checkbox" value="' + A.esc(p) + '"' + (on ? " checked" : "") + '><span>' + A.esc(p) + '</span></label>';
+    }).join("");
+  }
+
+  function renderMatrix() {
+    var head = '<tr><th>Permission</th>' + G.roles.map(function (r) { return '<th style="text-align:center">' + A.esc(r.nom) + '</th>'; }).join("") + '</tr>';
+    var rows = G.permissions.map(function (p) {
+      return '<tr><td>' + A.esc(p) + '</td>' + G.roles.map(function (r) {
+        var on = (ROLE_PERMS[r.nom] || []).indexOf(p) > -1;
+        return '<td style="text-align:center">' + (on
+          ? '<span style="color:var(--green)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg></span>'
+          : '<span style="color:var(--a-muted-2)">—</span>') + '</td>';
+      }).join("") + '</tr>';
+    }).join("");
+    document.querySelector("#matrix thead").innerHTML = head;
+    document.querySelector("#matrix tbody").innerHTML = rows;
+  }
+
+  document.getElementById("rolesBody").addEventListener("click", function (e) {
+    var p = e.target.closest("[data-perm]"); if (p) { selectedRole = +p.getAttribute("data-perm"); renderPermGrid(); document.getElementById("permRoleName").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    var er = e.target.closest("[data-editrole]");
+    if (er) { openRole(+er.getAttribute("data-editrole")); }
+  });
+
+  function openRole(id) {
+    var r = id ? G.roles.find(function (x) { return x.id === id; }) : null;
+    document.getElementById("rTitle").textContent = r ? "Modifier le rôle" : "Nouveau rôle";
+    document.getElementById("rId").value = r ? r.id : "";
+    document.getElementById("rNom").value = r ? r.nom : "";
+    document.getElementById("rDesc").value = r ? r.description : "";
+    var perms = ROLE_PERMS[r ? r.nom : ""] || [];
+    document.getElementById("rPerms").innerHTML = G.permissions.map(function (p) {
+      var on = perms.indexOf(p) > -1;
+      return '<label class="perm-item"><input type="checkbox" value="' + A.esc(p) + '"' + (on ? " checked" : "") + '><span>' + A.esc(p) + '</span></label>';
+    }).join("");
+    A.openModal("roleModal");
+  }
+
+  document.getElementById("addRoleBtn").addEventListener("click", function () { openRole(null); });
+
+  document.getElementById("saveRoleBtn").addEventListener("click", function () {
+    var id = document.getElementById("rId").value;
+    var nom = document.getElementById("rNom").value.trim();
+    if (!nom) { A.toast("Le nom du rôle est obligatoire.", false); return; }
+    var checked = Array.prototype.map.call(document.querySelectorAll("#rPerms input:checked"), function (i) { return i.value; });
+    if (id) {
+      var r = G.roles.find(function (x) { return x.id === +id; });
+      var old = r.nom; r.nom = nom; r.description = document.getElementById("rDesc").value.trim(); r.permissions = checked.length;
+      ROLE_PERMS[nom] = checked; if (old !== nom) delete ROLE_PERMS[old];
+      A.toast("Rôle modifié.");
+    } else {
+      G.roles.push({ id: A.Store.nextId(G.roles), nom: nom, utilisateurs: 0, description: document.getElementById("rDesc").value.trim(), permissions: checked.length });
+      ROLE_PERMS[nom] = checked;
+      A.toast("Rôle créé.");
+    }
+    A.closeModal("roleModal");
+    renderRoles();
+  });
+
+  document.getElementById("savePermBtn").addEventListener("click", function () {
+    var r = G.roles.find(function (x) { return x.id === selectedRole; });
+    if (!r) return;
+    var checked = Array.prototype.map.call(document.querySelectorAll("#permGrid input:checked"), function (i) { return i.value; });
+    ROLE_PERMS[r.nom] = checked; r.permissions = checked.length;
+    renderRoles();
+    A.toast("Permissions du rôle « " + r.nom + " » enregistrées.");
+  });
+
+  /* ---------- Onglets ---------- */
+  document.getElementById("tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+    b.classList.add("active");
+    var t = b.getAttribute("data-t");
+    document.getElementById("viewUsers").style.display = t === "users" ? "" : "none";
+    document.getElementById("viewRoles").style.display = t === "roles" ? "" : "none";
+  });
+
+  fillSelect(document.getElementById("fRole"), G.roles, "Tous les rôles");
+  fillSelect(document.getElementById("fRole2"), G.roles, null);
+  renderUsers();
+  renderRoles();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Émissions | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+      <div class="a-toolbar">
+        <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="Rechercher une émission…"></div>
+        <select class="a-select" id="fCat"><option value="">Toutes les catégories</option></select>
+        <div class="spacer"></div>
+        <button class="a-btn a-btn--primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouvelle émission</button>
+      </div>
+      <div class="panel"><div class="panel__body flush"><div class="tbl-wrap">
+        <table class="tbl"><thead><tr><th>Émission</th><th>Catégorie</th><th>Animateur</th><th>Diffusion</th><th>Podcasts</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="body"></tbody></table>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="a-modal" id="modal">
+  <div class="a-modal__scrim"></div>
+  <div class="a-modal__box">
+    <div class="a-modal__head"><h3 id="mTitle">Nouvelle émission</h3><button class="x" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="a-modal__body">
+      <form id="form">
+        <input type="hidden" id="fId">
+        <div class="a-field"><label>Nom de l'émission <span class="req">*</span></label><input class="a-input" id="fNom" required placeholder="Ex : Parlons Sport"></div>
+        <div class="a-field"><label>Description <span class="req">*</span></label><textarea class="a-textarea" id="fDesc" required placeholder="Concept de l'émission…"></textarea></div>
+        <div class="a-row">
+          <div class="a-field"><label>Catégorie <span class="req">*</span></label><select id="fCategorie" required></select></div>
+          <div class="a-field"><label>Animateur(s)</label><input class="a-input" id="fAnimateur" placeholder="Ex : Ibrahim Traoré"></div>
+        </div>
+        <div class="a-row">
+          <div class="a-field"><label>Créneau de diffusion</label><input class="a-input" id="fDiffusion" placeholder="Ex : Samedi 18h00"></div>
+          <div class="a-field"><label>Statut</label><select id="fStatut"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        </div>
+        <div class="a-field"><label>Image de couverture</label><div class="dropzone" id="dz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V7m0 0-4 4m4-4 4 4M4 19h16"/></svg><div><b>Cliquez ou déposez une image</b></div><div class="hint">JPG, PNG — 2 Mo max. Stockée comme fichier, seul le chemin est en base.</div></div></div>
+      </form>
+    </div>
+    <div class="a-modal__foot"><button class="a-btn a-btn--ghost" data-close-modal>Annuler</button><button class="a-btn a-btn--primary" id="saveBtn">Enregistrer</button></div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, S = A.Store;
+  A.mountAdmin("emissions", "Émissions", "Contenus / Émissions", '<button class="a-btn a-btn--primary a-btn--sm" id="addBtn2">' + A.A.plus + ' Ajouter</button>');
+  document.getElementById("addBtn2").addEventListener("click", function () { open(null); });
+
+  document.getElementById("fCat").innerHTML += GBEKE.categories.map(function (c) { return '<option>' + c.nom + '</option>'; }).join("");
+  document.getElementById("fCategorie").innerHTML = GBEKE.categories.map(function (c) { return '<option>' + c.nom + '</option>'; }).join("");
+
+  var q = "", fc = "";
+  function rows() {
+    return S.emissions.filter(function (e) {
+      var ok = (!q || (e.nom + e.animateur + e.categorie).toLowerCase().indexOf(q.toLowerCase()) > -1) && (!fc || e.categorie === fc);
+      return ok;
+    });
+  }
+  function render() {
+    var list = rows();
+    document.getElementById("body").innerHTML = list.map(function (e) {
+      var n = S.podcasts.filter(function (p) { return p.emissionId === e.id; }).length;
+      return '<tr>' +
+        '<td><div class="cf"><img class="mini" src="../' + e.image + '" alt=""><div><div class="nm">' + A.esc(e.nom) + '</div><div class="sm">/' + e.slug + '</div></div></div></td>' +
+        '<td>' + e.categorie + '</td>' +
+        '<td>' + A.esc(e.animateur) + '</td>' +
+        '<td class="sm">' + A.esc(e.diffusion) + '</td>' +
+        '<td>' + n + '</td>' +
+        '<td>' + A.statutBadge("active") + '</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="act" data-view="' + e.id + '" title="Voir">' + A.A.eye + '</button>' +
+          '<button class="act" data-edit="' + e.id + '" title="Modifier">' + A.A.edit + '</button>' +
+          '<button class="act danger" data-del="' + e.id + '" title="Supprimer">' + A.A.trash + '</button>' +
+        '</div></td></tr>';
+    }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--a-muted);padding:30px">Aucune émission trouvée.</td></tr>';
+  }
+  function open(id) {
+    var e = id ? S.emissions.find(function (x) { return x.id === id; }) : null;
+    document.getElementById("mTitle").textContent = e ? "Modifier l'émission" : "Nouvelle émission";
+    document.getElementById("fId").value = e ? e.id : "";
+    document.getElementById("fNom").value = e ? e.nom : "";
+    document.getElementById("fDesc").value = e ? e.description : "";
+    document.getElementById("fCategorie").value = e ? e.categorie : GBEKE.categories[0].nom;
+    document.getElementById("fAnimateur").value = e ? e.animateur : "";
+    document.getElementById("fDiffusion").value = e ? e.diffusion : "";
+    document.getElementById("fStatut").value = e ? "active" : "active";
+    A.openModal("modal");
+  }
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    var nom = document.getElementById("fNom"), desc = document.getElementById("fDesc");
+    if (!nom.value.trim() || !desc.value.trim()) { A.toast("Nom et description sont obligatoires.", false); return; }
+    var id = document.getElementById("fId").value;
+    var data = {
+      nom: nom.value.trim(), description: desc.value.trim(),
+      categorie: document.getElementById("fCategorie").value,
+      animateur: document.getElementById("fAnimateur").value.trim() || "—",
+      diffusion: document.getElementById("fDiffusion").value.trim() || "—",
+      slug: nom.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      image: "assets/img/emission-culture.jpg"
+    };
+    if (id) { var e = S.emissions.find(function (x) { return x.id === Number(id); }); Object.assign(e, data); A.toast("Émission mise à jour."); }
+    else { data.id = S.nextId(S.emissions); S.emissions.push(data); A.toast("Émission créée."); }
+    A.closeModal("modal"); render();
+  });
+  document.getElementById("body").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.edit) open(Number(b.dataset.edit));
+    else if (b.dataset.del) {
+      if (confirm("Supprimer cette émission ?")) {
+        S.emissions = S.emissions.filter(function (x) { return x.id !== Number(b.dataset.del); });
+        A.toast("Émission supprimée."); render();
+      }
+    } else if (b.dataset.view) {
+      var em = S.emissions.find(function (x) { return x.id === Number(b.dataset.view); });
+      window.open("../emission.html?id=" + em.id, "_blank");
+    }
+  });
+  document.getElementById("q").addEventListener("input", function (e) { q = e.target.value; render(); });
+  document.getElementById("fCat").addEventListener("change", function (e) { fc = e.target.value; render(); });
+  document.getElementById("addBtn").addEventListener("click", function () { open(null); });
+  document.getElementById("dz").addEventListener("click", function () { A.toast("Sélection de fichier simulée (démo)."); });
+  render();
+});
+</script>
+</body>
+</html>

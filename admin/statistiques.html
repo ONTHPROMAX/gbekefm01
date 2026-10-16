@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statistiques | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+
+      <div class="a-toolbar">
+        <div class="seg" id="period">
+          <button data-p="jour">Aujourd'hui</button>
+          <button data-p="7j" class="active">7 jours</button>
+          <button data-p="30j">30 jours</button>
+          <button data-p="annee">Année</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="a-btn a-btn--ghost" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg> Exporter (CSV)</button>
+      </div>
+
+      <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat"><div class="ic ic--o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5a3.5 3.5 0 0 1 0 7M18 20a6 6 0 0 0-3-5"/></svg></div><div class="lbl">Visiteurs uniques</div><div class="val" id="vVisit">0</div><span class="trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>+9,4%</span><span class="spark" id="spVisit"></span></div>
+        <div class="stat"><div class="ic ic--g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="11" r="3"/><path d="M12 14v7M8.5 8.5a5 5 0 0 1 7 0M6 6a8.5 8.5 0 0 1 12 0"/></svg></div><div class="lbl">Écoutes podcasts</div><div class="val" id="vListen">0</div><span class="trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>+12,1%</span><span class="spark" id="spListen"></span></div>
+        <div class="stat"><div class="ic ic--r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div><div class="lbl">Auditeurs en direct (pic)</div><div class="val" id="vLive">0</div><span class="trend up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>+4,7%</span><span class="spark" id="spLive"></span></div>
+        <div class="stat"><div class="ic ic--b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg></div><div class="lbl">Téléchargements</div><div class="val" id="vDl">0</div><span class="trend down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m0 0 6-6m-6 6-6-6"/></svg>-2,3%</span><span class="spark" id="spDl"></span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__head"><div><h3>Audience dans le temps</h3><div class="sub" id="chartSub">Visites du site et écoutes de podcasts</div></div>
+            <div class="seg" id="metric"><button data-m="visites" class="active">Visites</button><button data-m="ecoutes">Écoutes</button></div>
+          </div>
+          <div class="panel__body" id="mainChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h3>Répartition par appareil</h3></div>
+          <div class="panel__body" id="devChart"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__head"><div><h3>Direct vs Podcast (rediffusion)</h3><div class="sub">Comparaison des deux modes d'écoute</div></div></div>
+          <div class="panel__body">
+            <div class="mini-stat"><span class="ic ic--r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4"/></svg></span><div class="m"><b>Radio en direct</b><span>Écoute live sur le site</span></div><span class="v" id="cmpLive">0</span></div>
+            <div class="mini-stat"><span class="ic ic--g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="11" r="3"/><path d="M12 14v7M8.5 8.5a5 5 0 0 1 7 0M6 6a8.5 8.5 0 0 1 12 0"/></svg></span><div class="m"><b>Podcasts (à la demande)</b><span>Écoute différée / replay</span></div><span class="v" id="cmpPod">0</span></div>
+            <div class="legend-row" style="margin-top:8px"><span class="l">Part du direct</span><b id="cmpLivePct">—</b></div>
+            <div class="legend-row"><span class="l">Part du podcast</span><b id="cmpPodPct">—</b></div>
+            <div class="legend-row"><span class="l">Durée moyenne d'écoute</span><b>24 min 12 s</b></div>
+            <div class="legend-row"><span class="l">Taux d'écoute complète</span><b>68 %</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h3>Écoutes par catégorie</h3></div>
+          <div class="panel__body" id="catChart"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__head"><h3>Podcasts les plus écoutés</h3><a class="a-btn a-btn--ghost a-btn--sm" href="podcasts.html">Voir tout</a></div>
+          <div class="panel__body flush"><div class="tbl-wrap">
+            <table class="tbl"><thead><tr><th>#</th><th>Podcast</th><th>Émission</th><th style="text-align:right">Écoutes</th><th style="text-align:right">Téléch.</th></tr></thead>
+            <tbody id="topPod"></tbody></table>
+          </div></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h3>Émissions les plus suivies</h3><a class="a-btn a-btn--ghost a-btn--sm" href="emissions.html">Voir tout</a></div>
+          <div class="panel__body flush"><div class="tbl-wrap">
+            <table class="tbl"><thead><tr><th>#</th><th>Émission</th><th>Catégorie</th><th style="text-align:right">Podcasts</th><th style="text-align:right">Écoutes</th></tr></thead>
+            <tbody id="topEmi"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, G = window.GBEKE;
+  A.mountAdmin("statistiques", "Statistiques", "Audience / Statistiques");
+
+  var LABELS = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim","Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+  var factor = { "jour": 0.12, "7j": 1, "30j": 3.6, "annee": 12 };
+  var period = "7j", metric = "visites";
+
+  function scaled(arr, f) { return arr.map(function (v) { return Math.round(v * f); }); }
+
+  function renderStats() {
+    var f = factor[period];
+    var visits = scaled(G.visitsSeries, f);
+    var listens = scaled(G.listensSeries, f);
+    var vTot = visits.reduce(function (a, b) { return a + b; }, 0);
+    var lTot = listens.reduce(function (a, b) { return a + b; }, 0);
+    var livePeak = Math.round(G.stats.auditeursLive * (1 + (f - 1) * 0.35));
+    var dl = Math.round(G.stats.telechargements * f * 0.5);
+
+    document.getElementById("vVisit").textContent = A.fmtNum(vTot);
+    document.getElementById("vListen").textContent = A.fmtNum(lTot);
+    document.getElementById("vLive").textContent = A.fmtNum(livePeak);
+    document.getElementById("vDl").textContent = A.fmtNum(dl);
+
+    document.getElementById("spVisit").innerHTML = A.sparkline(visits, "#F26B0F");
+    document.getElementById("spListen").innerHTML = A.sparkline(listens, "#35C46B");
+    document.getElementById("spLive").innerHTML = A.sparkline(scaled(G.visitsSeries, f * 0.6), "#F2555A");
+    document.getElementById("spDl").innerHTML = A.sparkline(scaled(G.listensSeries, f * 0.28), "#4C8DF6");
+
+    // Comparaison direct vs podcast
+    var pod = lTot;
+    var live = Math.round(livePeak * (period === "jour" ? 1 : 3.2));
+    var tot = pod + live;
+    document.getElementById("cmpLive").textContent = A.fmtNum(live);
+    document.getElementById("cmpPod").textContent = A.fmtNum(pod);
+    document.getElementById("cmpLivePct").textContent = Math.round((live / tot) * 100) + " %";
+    document.getElementById("cmpPodPct").textContent = Math.round((pod / tot) * 100) + " %";
+
+    // Graphique principal
+    var series = metric === "visites" ? visits : listens;
+    document.getElementById("mainChart").innerHTML = A.lineChart(series, LABELS, {});
+    document.getElementById("chartSub").textContent = (metric === "visites" ? "Visites du site" : "Écoutes de podcasts") + " — " + (period === "jour" ? "aujourd'hui" : period === "7j" ? "7 derniers jours" : period === "30j" ? "30 derniers jours" : "cette année");
+  }
+
+  function renderCat() {
+    var data = G.categories.map(function (c) {
+      var tot = G.podcasts.filter(function (p) { return p.categorie === c.nom; }).reduce(function (a, p) { return a + p.ecoute; }, 0);
+      return { l: c.nom.length > 9 ? c.nom.slice(0, 9) + "…" : c.nom, v: tot };
+    }).sort(function (a, b) { return b.v - a.v; }).slice(0, 6);
+    document.getElementById("catChart").innerHTML = A.barChart(data);
+  }
+
+  function renderDev() {
+    document.getElementById("devChart").innerHTML = A.donutChart([
+      { l: "Mobile", v: 62, c: "#F26B0F" },
+      { l: "Ordinateur", v: 28, c: "#35C46B" },
+      { l: "Tablette", v: 10, c: "#4C8DF6" }
+    ]);
+  }
+
+  function renderTop() {
+    var pods = G.podcasts.slice().sort(function (a, b) { return b.ecoute - a.ecoute; }).slice(0, 5);
+    document.getElementById("topPod").innerHTML = pods.map(function (p, i) {
+      return '<tr><td><b>' + (i + 1) + '</b></td>' +
+        '<td><div class="cf"><img class="mini" src="../' + p.image + '" alt=""><div><div class="nm">' + A.esc(p.titre.length > 30 ? p.titre.slice(0, 30) + "…" : p.titre) + '</div><div class="sm">' + A.esc(p.duree) + '</div></div></div></td>' +
+        '<td><span class="sm">' + A.esc(p.emission) + '</span></td>' +
+        '<td style="text-align:right"><b>' + A.fmtNum(p.ecoute) + '</b></td>' +
+        '<td style="text-align:right"><span class="sm">' + A.fmtNum(p.telechargements) + '</span></td></tr>';
+    }).join("");
+
+    var emis = G.emissions.map(function (e) {
+      var eps = G.podcasts.filter(function (p) { return p.emissionId === e.id; });
+      return { e: e, n: eps.length, ec: eps.reduce(function (a, p) { return a + p.ecoute; }, 0) };
+    }).sort(function (a, b) { return b.ec - a.ec; }).slice(0, 5);
+    document.getElementById("topEmi").innerHTML = emis.map(function (x, i) {
+      return '<tr><td><b>' + (i + 1) + '</b></td>' +
+        '<td><div class="cf"><img class="mini" src="../' + x.e.image + '" alt=""><div class="nm">' + A.esc(x.e.nom) + '</div></div></td>' +
+        '<td><span class="sm">' + A.esc(x.e.categorie) + '</span></td>' +
+        '<td style="text-align:right">' + x.n + '</td>' +
+        '<td style="text-align:right"><b>' + A.fmtNum(x.ec) + '</b></td></tr>';
+    }).join("");
+  }
+
+  document.getElementById("period").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+    b.classList.add("active");
+    period = b.getAttribute("data-p");
+    renderStats();
+  });
+
+  document.getElementById("metric").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.remove("active"); });
+    b.classList.add("active");
+    metric = b.getAttribute("data-m");
+    renderStats();
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", function () {
+    A.toast("Rapport statistiques exporté (CSV) — démo.");
+  });
+
+  renderStats(); renderCat(); renderDev(); renderTop();
+});
+</script>
+</body>
+</html>

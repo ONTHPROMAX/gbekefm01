@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Podcasts | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+      <div class="a-toolbar">
+        <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="q" placeholder="Rechercher un podcast…"></div>
+        <select class="a-select" id="fEm"><option value="">Toutes les émissions</option></select>
+        <select class="a-select" id="fSt"><option value="">Tous les statuts</option><option value="publié">Publié</option><option value="brouillon">Brouillon</option></select>
+        <div class="spacer"></div>
+        <button class="a-btn a-btn--primary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouveau podcast</button>
+      </div>
+      <div class="panel"><div class="panel__body flush"><div class="tbl-wrap">
+        <table class="tbl"><thead><tr><th>Podcast</th><th>Émission</th><th>Durée</th><th>Date</th><th>Écoutes</th><th>Téléch.</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="body"></tbody></table>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="a-modal" id="modal">
+  <div class="a-modal__scrim"></div>
+  <div class="a-modal__box">
+    <div class="a-modal__head"><h3 id="mTitle">Nouveau podcast</h3><button class="x" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="a-modal__body">
+      <form id="form">
+        <input type="hidden" id="fId">
+        <div class="a-field"><label>Titre <span class="req">*</span></label><input class="a-input" id="fTitre" required placeholder="Ex : Les Éléphants préparent la CAN"></div>
+        <div class="a-field"><label>Description <span class="req">*</span></label><textarea class="a-textarea" id="fDesc" required placeholder="Résumé de l'épisode…"></textarea></div>
+        <div class="a-row">
+          <div class="a-field"><label>Émission associée <span class="req">*</span></label><select id="fEmission" required></select></div>
+          <div class="a-field"><label>Créateur</label><input class="a-input" id="fCreateur" placeholder="Ex : Ibrahim Traoré"></div>
+        </div>
+        <div class="a-row">
+          <div class="a-field"><label>Durée (mm:ss)</label><input class="a-input" id="fDuree" placeholder="Ex : 45:15"></div>
+          <div class="a-field"><label>Date de publication</label><input class="a-input" type="date" id="fDate"></div>
+        </div>
+        <div class="a-field"><label>Fichier audio</label><div class="dropzone" id="dzAudio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V7m0 0-4 4m4-4 4 4M4 19h16"/></svg><div><b>Déposez le fichier audio (MP3)</b></div><div class="hint">Le fichier est stocké à part ; seul son chemin est enregistré en base.</div></div></div>
+        <div class="a-field"><label>Image de couverture</label><div class="dropzone" id="dzImg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg><div><b>Image JPG / PNG</b></div></div></div>
+        <div class="a-row">
+          <div class="a-field"><label>Statut</label><select id="fStatut"><option value="publié">Publié</option><option value="brouillon">Brouillon</option></select></div>
+          <div class="a-field" style="display:flex;flex-direction:column;gap:10px;padding-top:26px">
+            <label class="a-check"><input type="checkbox" id="fEcoute" checked> Écoute publique</label>
+            <label class="a-check"><input type="checkbox" id="fDl" checked> Téléchargement public</label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="a-modal__foot"><button class="a-btn a-btn--ghost" data-close-modal>Annuler</button><button class="a-btn a-btn--primary" id="saveBtn">Enregistrer</button></div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, S = A.Store;
+  A.mountAdmin("podcasts", "Podcasts", "Contenus / Podcasts", '<button class="a-btn a-btn--primary a-btn--sm" id="addBtn2">' + A.A.plus + ' Ajouter</button>');
+  document.getElementById("addBtn2").addEventListener("click", function () { open(null); });
+  document.getElementById("fEm").innerHTML += GBEKE.emissions.map(function (e) { return '<option value="' + e.id + '">' + e.nom + '</option>'; }).join("");
+  document.getElementById("fEmission").innerHTML = GBEKE.emissions.map(function (e) { return '<option value="' + e.id + '">' + e.nom + '</option>'; }).join("");
+
+  var q = "", fe = "", fs = "";
+  function render() {
+    var list = S.podcasts.filter(function (p) {
+      return (!q || (p.titre + p.emission).toLowerCase().indexOf(q.toLowerCase()) > -1) &&
+             (!fe || p.emissionId === Number(fe)) && (!fs || p.statut === fs);
+    }).sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+    document.getElementById("body").innerHTML = list.map(function (p) {
+      return '<tr>' +
+        '<td><div class="cf"><img class="mini" src="../' + p.image + '" alt=""><div><div class="nm">' + A.esc(p.titre.substring(0, 40)) + (p.titre.length > 40 ? "…" : "") + '</div><div class="sm">' + p.categorie + '</div></div></div></td>' +
+        '<td class="sm">' + p.emission + '</td>' +
+        '<td>' + p.duree + '</td>' +
+        '<td class="sm">' + GBEKE.fmtDateShort(p.date) + '</td>' +
+        '<td>' + A.fmtNum(p.ecoute) + '</td>' +
+        '<td>' + A.fmtNum(p.telechargements) + '</td>' +
+        '<td>' + A.statutBadge(p.statut) + '</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="act" data-view="' + p.id + '" title="Écouter">' + A.A.play + '</button>' +
+          '<button class="act" data-edit="' + p.id + '" title="Modifier">' + A.A.edit + '</button>' +
+          '<button class="act danger" data-del="' + p.id + '" title="Supprimer">' + A.A.trash + '</button>' +
+        '</div></td></tr>';
+    }).join("") || '<tr><td colspan="8" style="text-align:center;color:var(--a-muted);padding:30px">Aucun podcast trouvé.</td></tr>';
+  }
+  function open(id) {
+    var p = id ? S.podcasts.find(function (x) { return x.id === id; }) : null;
+    document.getElementById("mTitle").textContent = p ? "Modifier le podcast" : "Nouveau podcast";
+    document.getElementById("fId").value = p ? p.id : "";
+    document.getElementById("fTitre").value = p ? p.titre : "";
+    document.getElementById("fDesc").value = p ? p.description : "";
+    document.getElementById("fEmission").value = p ? p.emissionId : GBEKE.emissions[0].id;
+    document.getElementById("fCreateur").value = p ? p.createur : "";
+    document.getElementById("fDuree").value = p ? p.duree : "";
+    document.getElementById("fDate").value = p ? p.date : new Date().toISOString().slice(0, 10);
+    document.getElementById("fStatut").value = p ? p.statut : "publié";
+    A.openModal("modal");
+  }
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    var titre = document.getElementById("fTitre"), desc = document.getElementById("fDesc");
+    if (!titre.value.trim() || !desc.value.trim()) { A.toast("Titre et description sont obligatoires.", false); return; }
+    var em = GBEKE.emissionById(document.getElementById("fEmission").value);
+    var id = document.getElementById("fId").value;
+    var data = {
+      titre: titre.value.trim(), description: desc.value.trim(),
+      emissionId: em.id, emission: em.nom, categorie: em.categorie,
+      createur: document.getElementById("fCreateur").value.trim() || em.animateur,
+      duree: document.getElementById("fDuree").value.trim() || "30:00",
+      date: document.getElementById("fDate").value || new Date().toISOString().slice(0, 10),
+      statut: document.getElementById("fStatut").value,
+      image: em.image, audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    };
+    if (id) { var p = S.podcasts.find(function (x) { return x.id === Number(id); }); Object.assign(p, data); A.toast("Podcast mis à jour."); }
+    else { data.id = S.nextId(S.podcasts); data.ecoute = 0; data.telechargements = 0; S.podcasts.unshift(data); A.toast("Podcast créé."); }
+    A.closeModal("modal"); render();
+  });
+  document.getElementById("body").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.edit) open(Number(b.dataset.edit));
+    else if (b.dataset.del) { if (confirm("Supprimer ce podcast ?")) { S.podcasts = S.podcasts.filter(function (x) { return x.id !== Number(b.dataset.del); }); A.toast("Podcast supprimé."); render(); } }
+    else if (b.dataset.view) window.open("../podcast.html?id=" + b.dataset.view, "_blank");
+  });
+  document.getElementById("q").addEventListener("input", function (e) { q = e.target.value; render(); });
+  document.getElementById("fEm").addEventListener("change", function (e) { fe = e.target.value; render(); });
+  document.getElementById("fSt").addEventListener("change", function (e) { fs = e.target.value; render(); });
+  document.getElementById("addBtn").addEventListener("click", function () { open(null); });
+  document.getElementById("dzAudio").addEventListener("click", function () { A.toast("Téléversement audio simulé (démo)."); });
+  document.getElementById("dzImg").addEventListener("click", function () { A.toast("Téléversement image simulé (démo)."); });
+  render();
+});
+</script>
+</body>
+</html>

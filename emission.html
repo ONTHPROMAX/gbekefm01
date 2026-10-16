@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Émission — GBÊKÊ FM</title>
+<meta name="description" content="Découvrez l'émission et écoutez tous ses podcasts sur GBÊKÊ FM.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="emissions">
+<div id="app-header"></div>
+<div id="content"></div>
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI, I = U.I;
+  var id = new URLSearchParams(location.search).get("id") || 1;
+  var e = GBEKE.emissionById(id) || GBEKE.emissions[0];
+  var pods = GBEKE.byEmission(e.id).filter(function (p) { return p.statut === "publié"; });
+  document.title = e.nom + " — Émission GBÊKÊ FM";
+  var html =
+  '<section class="page-hero"><div class="wrap">' +
+    '<div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <a href="emissions.html">Émissions</a> <span>/</span> <span>' + e.nom + '</span></div>' +
+    '<h1>' + e.nom + '</h1><p>' + e.description + '</p></div></section>' +
+  '<main><section class="section"><div class="wrap"><div class="detail">' +
+    '<div class="detail__main">' +
+      '<div class="cover-lg reveal"><img src="' + e.image + '" alt="' + e.nom + '"></div>' +
+      '<div class="detail__meta">' +
+        '<span class="badge badge--cat">' + e.categorie + '</span>' +
+        '<span>' + I.user + e.animateur + '</span>' +
+        '<span>' + I.clock + e.diffusion + '</span>' +
+        '<span>' + I.radio + pods.length + ' podcasts</span>' +
+      '</div>' +
+      '<h2 style="margin-bottom:16px">Épisodes enregistrés</h2>' +
+      '<div class="grid grid-2" id="pods"></div>' +
+    '</div>' +
+    '<aside>' +
+      '<div class="side-card sticky reveal"><h4>' + I.radio + 'Fiche émission</h4>' +
+      '<ul class="info-list">' +
+        '<li><span class="k">Catégorie</span><span class="v">' + e.categorie + '</span></li>' +
+        '<li><span class="k">Animateur</span><span class="v">' + e.animateur + '</span></li>' +
+        '<li><span class="k">Diffusion</span><span class="v">' + e.diffusion + '</span></li>' +
+        '<li><span class="k">Podcasts</span><span class="v">' + pods.length + '</span></li>' +
+        '<li><span class="k">Statut</span><span class="v" style="color:var(--green)">Publiée</span></li>' +
+      '</ul>' +
+      '<a class="btn btn--ghost btn--block" style="margin-top:16px" href="categorie.html?id=' + (GBEKE.categories.find(function(c){return c.nom===e.categorie;})||{id:1}).id + '">Voir la catégorie</a>' +
+      '</div>' +
+      '<div class="side-card reveal"><h4>' + I.spark + 'Autres émissions</h4><div id="others"></div></div>' +
+    '</aside>' +
+  '</div></div></section></main>';
+  document.getElementById("content").innerHTML = html;
+  document.getElementById("pods").innerHTML = pods.length ? pods.map(U.podcastCard).join("") :
+    '<div class="empty"><h3>Aucun podcast publié</h3><p>Revenez bientôt.</p></div>';
+  document.getElementById("others").innerHTML = GBEKE.emissions.filter(function (x) { return x.id !== e.id; }).slice(0, 4).map(function (x) {
+    return '<a class="cat-tile" style="margin-bottom:10px" href="emission.html?id=' + x.id + '"><span class="ic">' + U.catIcon((GBEKE.categories.find(function(c){return c.nom===x.categorie;})||{icone:"grid"}).icone) + '</span><span><b>' + x.nom + '</b><span>' + x.categorie + '</span></span><span class="arrow">' + I.chev + '</span></a>';
+  }).join("");
+  U.revealInit();
+});
+</script>
+</body>
+</html>

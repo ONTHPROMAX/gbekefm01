@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord | Administration GBÊKÊ FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+<div class="admin">
+  <aside class="sidebar" id="app-sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="app-topbar"></header>
+    <div class="content">
+
+      <div class="stats" id="stats"></div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__head">
+            <div><h3>Audience & écoutes</h3><div class="sub">14 derniers jours</div></div>
+            <div class="seg" id="chartSeg">
+              <button class="active" data-c="visits">Visites</button>
+              <button data-c="listens">Écoutes</button>
+            </div>
+          </div>
+          <div class="panel__body" id="mainChart"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><div><h3>En direct</h3><div class="sub">Auditeurs connectés</div></div><span class="a-badge live">Live</span></div>
+          <div class="panel__body">
+            <div style="text-align:center;padding:8px 0 18px">
+              <div style="font-family:var(--font-head);font-size:2.6rem;font-weight:700" id="liveCount">0</div>
+              <div style="color:var(--a-muted);font-size:.85rem">auditeurs en direct sur 105.2 MHz</div>
+            </div>
+            <div id="donut"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel__head"><div><h3>Dernières émissions</h3><div class="sub">Programmes actifs</div></div><a class="a-btn a-btn--ghost a-btn--sm" href="emissions.html">Gérer</a></div>
+          <div class="panel__body flush"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Émission</th><th>Catégorie</th><th>Podcasts</th><th>Statut</th></tr></thead><tbody id="emTable"></tbody></table></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><div><h3>Derniers articles</h3><div class="sub">Rédaction</div></div><a class="a-btn a-btn--ghost a-btn--sm" href="articles.html">Gérer</a></div>
+          <div class="panel__body flush"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Article</th><th>Auteur</th><th>Vues</th><th>Statut</th></tr></thead><tbody id="artTable"></tbody></table></div></div>
+        </div>
+      </div>
+
+      <div class="grid-2b">
+        <div class="panel">
+          <div class="panel__head"><h3>Raccourcis</h3></div>
+          <div class="panel__body" id="shortcuts" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h3>Activité récente</h3></div>
+          <div class="panel__body" id="activity"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var A = window.ADMIN, S = A.Store, G = GBEKE;
+  A.mountAdmin("dashboard", "Tableau de bord", "Administration / Pilotage");
+
+  /* Stat cards */
+  var stats = [
+    { lbl: "Visiteurs", val: G.stats.visiteurs, ic: "eye", cls: "ic--b", trend: "+12,4%", up: true, spark: G.visitsSeries },
+    { lbl: "Utilisateurs", val: G.stats.utilisateurs, ic: "users", cls: "ic--p", trend: "+5,1%", up: true, spark: [8,10,9,12,11,14,13,16] },
+    { lbl: "Écoutes podcasts", val: G.stats.ecoutes, ic: "play", cls: "ic--o", trend: "+18,9%", up: true, spark: G.listensSeries },
+    { lbl: "Téléchargements", val: G.stats.telechargements, ic: "download", cls: "ic--g", trend: "-2,3%", up: false, spark: [12,14,13,15,14,13,12,11] }
+  ];
+  document.getElementById("stats").innerHTML = stats.map(function (s) {
+    return '<div class="stat">' +
+      '<div class="ic ' + s.cls + '">' + A.A[s.ic] + '</div>' +
+      '<div class="lbl">' + s.lbl + '</div>' +
+      '<div class="val">' + A.fmtNum(s.val) + '</div>' +
+      '<span class="trend ' + (s.up ? "up" : "down") + '">' + (s.up ? A.A.up : A.A.down) + s.trend + '</span>' +
+      A.sparkline(s.spark, s.up ? "#35C46B" : "#F2555A") +
+    '</div>';
+  }).join("");
+
+  /* Main chart */
+  var labels = ["J1","J2","J3","J4","J5","J6","J7","J8","J9","J10","J11","J12","J13","J14"];
+  function drawChart(which) {
+    var data = which === "visits" ? G.visitsSeries : G.listensSeries;
+    document.getElementById("mainChart").innerHTML = A.lineChart(data, labels);
+  }
+  drawChart("visits");
+  document.getElementById("chartSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    A.$$("#chartSeg button").forEach(function (x) { x.classList.toggle("active", x === b); });
+    drawChart(b.dataset.c);
+  });
+
+  /* Live counter */
+  var live = G.radio.auditeurs;
+  function tickLive() {
+    live += Math.floor(Math.random() * 41) - 18;
+    if (live < 800) live = 800;
+    document.getElementById("liveCount").textContent = A.fmtNum(live);
+  }
+  tickLive(); setInterval(tickLive, 3500);
+
+  /* Donut */
+  document.getElementById("donut").innerHTML = A.donutChart([
+    { l: "Podcasts", v: S.podcasts.length, c: "#F26B0F" },
+    { l: "Émissions", v: S.emissions.length, c: "#35C46B" },
+    { l: "Articles", v: S.articles.length, c: "#4C8DF6" },
+    { l: "Catégories", v: S.categories.length, c: "#9B6BF2" }
+  ]);
+
+  /* Tables */
+  document.getElementById("emTable").innerHTML = S.emissions.slice(0, 5).map(function (e) {
+    var n = S.podcasts.filter(function (p) { return p.emissionId === e.id; }).length;
+    return '<tr><td><div class="cf"><img class="mini" src="../' + e.image + '" alt=""><div><div class="nm">' + e.nom + '</div><div class="sm">' + e.animateur + '</div></div></div></td>' +
+      '<td>' + e.categorie + '</td><td>' + n + '</td><td>' + A.statutBadge("active") + '</td></tr>';
+  }).join("");
+  document.getElementById("artTable").innerHTML = S.articles.slice(0, 5).map(function (a) {
+    return '<tr><td><div class="cf"><img class="mini" src="../' + a.image + '" alt=""><div><div class="nm">' + a.titre.substring(0, 34) + (a.titre.length > 34 ? "…" : "") + '</div><div class="sm">' + G.fmtDateShort(a.date) + '</div></div></div></td>' +
+      '<td>' + a.auteur + '</td><td>' + A.fmtNum(a.vues) + '</td><td>' + A.statutBadge(a.statut) + '</td></tr>';
+  }).join("");
+
+  /* Shortcuts */
+  var sc = [
+    ["Nouveau podcast", "podcasts.html", "podcast", "ic--o"],
+    ["Nouvelle émission", "emissions.html", "mic", "ic--g"],
+    ["Écrire un article", "articles.html", "file", "ic--b"],
+    ["Configurer la radio", "radio.html", "radio", "ic--p"],
+    ["Voir les messages", "messages.html", "msg", "ic--y"],
+    ["Statistiques", "statistiques.html", "chart", "ic--r"]
+  ];
+  document.getElementById("shortcuts").innerHTML = sc.map(function (s) {
+    return '<a class="a-btn a-btn--ghost" href="' + s[1] + '" style="justify-content:flex-start;padding:14px"><span class="ic ' + s[3] + '" style="width:36px;height:36px;border-radius:10px;display:grid;place-items:center">' + A.A[s[2]] + '</span>' + s[0] + '</a>';
+  }).join("");
+
+  /* Activity */
+  var act = [
+    ["pub", "Nouveau podcast publié", "« Les Éléphants préparent la CAN » — il y a 2 h"],
+    ["unread", "Nouveau message reçu", "Aïcha Koné — il y a 3 h"],
+    ["pub", "Article publié", "« Mag' Santé : cinq habitudes… » — hier"],
+    ["draft", "Brouillon enregistré", "« Rentrée culturelle » — hier"],
+    ["pub", "Utilisateur activé", "Ibrahim Traoré — il y a 2 j"]
+  ];
+  document.getElementById("activity").innerHTML = act.map(function (a) {
+    return '<div class="mini-stat"><span class="a-badge ' + a[0] + '"></span><div class="m"><b>' + a[1] + '</b><span>' + a[2] + '</span></div></div>';
+  }).join("");
+});
+</script>
+</body>
+</html>

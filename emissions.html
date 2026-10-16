@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Émissions — Les programmes de GBÊKÊ FM</title>
+<meta name="description" content="Découvrez toutes les émissions de GBÊKÊ FM : culture, musique, santé, éducation, société et sport.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="emissions">
+<div id="app-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumbs"><a href="index.html">Accueil</a> <span>/</span> <span>Émissions</span></div>
+    <h1>Nos émissions</h1>
+    <p>Des concepts radio qui rassemblent, informent et divertissent. Chaque émission regroupe ses podcasts enregistrés.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="wrap">
+      <div class="toolbar">
+        <div class="chips" id="catChips"></div>
+        <div class="spacer"></div>
+        <select class="select" id="sortSel">
+          <option value="nom">Trier : A → Z</option>
+          <option value="recent">Plus récentes</option>
+          <option value="podcasts">Plus de podcasts</option>
+        </select>
+      </div>
+      <div class="grid grid-3" id="grid"></div>
+      <div id="empty" class="empty hide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <h3>Aucune émission trouvée</h3><p>Essayez une autre catégorie.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI;
+  var cats = ["Toutes"].concat(GBEKE.categories.map(function (c) { return c.nom; }));
+  var curCat = "Toutes", curSort = "nom";
+  document.getElementById("catChips").innerHTML = cats.map(function (c, i) {
+    return '<button class="chip' + (i === 0 ? " is-active" : "") + '" data-cat="' + c + '">' + c + '</button>';
+  }).join("");
+  function render() {
+    var list = GBEKE.emissions.filter(function (e) { return curCat === "Toutes" || e.categorie === curCat; });
+    if (curSort === "nom") list.sort(function (a, b) { return a.nom.localeCompare(b.nom); });
+    if (curSort === "podcasts") list.sort(function (a, b) { return GBEKE.byEmission(b.id).length - GBEKE.byEmission(a.id).length; });
+    document.getElementById("grid").innerHTML = list.map(U.emissionCard).join("");
+    document.getElementById("empty").classList.toggle("hide", list.length > 0);
+    U.revealInit();
+  }
+  document.getElementById("catChips").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cat]"); if (!b) return;
+    curCat = b.dataset.cat;
+    U.$$("#catChips .chip").forEach(function (c) { c.classList.toggle("is-active", c === b); });
+    render();
+  });
+  document.getElementById("sortSel").addEventListener("change", function (e) { curSort = e.target.value; render(); });
+  render();
+});
+</script>
+</body>
+</html>

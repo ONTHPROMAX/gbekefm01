@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inscription | GBÊKÊ FM</title>
+<meta name="description" content="Créez votre compte GBÊKÊ FM (facultatif) pour enregistrer vos podcasts favoris et votre historique d'écoute.">
+<link rel="icon" href="assets/brand/gbeke-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body data-page="">
+<div id="app-header"></div>
+
+<main>
+  <div class="auth">
+    <aside class="auth__side">
+      <img src="assets/brand/gbeke-logo.png" alt="GBÊKÊ FM">
+      <h2>Rejoignez la communauté GBÊKÊ FM</h2>
+      <p>Créez votre compte gratuitement. L'inscription reste facultative : sans compte, vous pouvez déjà écouter et télécharger.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg> Enregistrez vos podcasts favoris</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg> Reprenez l'écoute où vous l'avez laissée</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg> Restez informé de nos nouveautés</li>
+      </ul>
+    </aside>
+    <div class="auth__form">
+      <h1>Créer un compte</h1>
+      <p class="sub">Quelques secondes suffisent.</p>
+      <form id="regForm" novalidate>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field">
+            <label for="prenom">Prénom <span class="req">*</span></label>
+            <input class="input" type="text" id="prenom" placeholder="Votre prénom" required autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label for="nom">Nom <span class="req">*</span></label>
+            <input class="input" type="text" id="nom" placeholder="Votre nom" required autocomplete="family-name">
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Adresse e-mail <span class="req">*</span></label>
+          <input class="input" type="email" id="email" placeholder="vous@email.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="pwd">Mot de passe <span class="req">*</span></label>
+          <input class="input" type="password" id="pwd" placeholder="Au moins 6 caractères" required autocomplete="new-password">
+          <div class="hint">Utilisez au moins 6 caractères, avec lettres et chiffres.</div>
+        </div>
+        <div class="field">
+          <label for="pwd2">Confirmer le mot de passe <span class="req">*</span></label>
+          <input class="input" type="password" id="pwd2" placeholder="Répétez le mot de passe" required autocomplete="new-password">
+        </div>
+        <div class="checkbox field">
+          <input type="checkbox" id="cgv" required>
+          <label for="cgv" style="font-weight:400;margin:0">J'accepte les conditions d'utilisation et la politique de confidentialité.</label>
+        </div>
+        <button class="btn btn--primary btn--block btn--lg" type="submit" id="regBtn">Créer mon compte</button>
+      </form>
+      <p class="swap">Vous avez déjà un compte ? <a href="connexion.html">Se connecter</a></p>
+      <p class="hint center" style="margin-top:16px">Vos données sont protégées. Les mots de passe sont stockés de manière sécurisée (hachage).</p>
+    </div>
+  </div>
+</main>
+
+<div id="app-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener("gbeke:ready", function () {
+  var U = window.GBEKE_UI;
+  document.getElementById("regForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var prenom = document.getElementById("prenom"), nom = document.getElementById("nom"),
+        email = document.getElementById("email"), pwd = document.getElementById("pwd"),
+        pwd2 = document.getElementById("pwd2"), cgv = document.getElementById("cgv");
+    var ok = true;
+    [prenom, nom, email, pwd, pwd2].forEach(function (f) {
+      var bad = !f.value.trim();
+      f.style.borderColor = bad ? "#d64545" : "";
+      if (bad) ok = false;
+    });
+    if (email.value && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.style.borderColor = "#d64545"; ok = false; }
+    if (pwd.value && pwd.value.length < 6) { pwd.style.borderColor = "#d64545"; ok = false; }
+    if (pwd.value !== pwd2.value) { pwd2.style.borderColor = "#d64545"; ok = false; U.toast("Les mots de passe ne correspondent pas.", false); return; }
+    if (!cgv.checked) { U.toast("Merci d'accepter les conditions d'utilisation.", false); return; }
+    if (!ok) { U.toast("Merci de compléter correctement le formulaire.", false); return; }
+    var btn = document.getElementById("regBtn");
+    btn.disabled = true; btn.textContent = "Création…";
+    setTimeout(function () {
+      U.setUser({ email: email.value, prenom: prenom.value, nom: nom.value, role: "Utilisateur", date: new Date().toISOString() });
+      U.toast("Compte créé ! Bienvenue " + prenom.value + ".");
+      setTimeout(function () { location.href = "profil.html"; }, 900);
+    }, 900);
+  });
+});
+</script>
+</body>
+</html>
